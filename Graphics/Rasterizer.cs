@@ -15,12 +15,10 @@ namespace GraphicsLibrary
         {
             foreach (var tri in mesh.Triangles)
             {
-                // Vertex shader
                 var v0 = vs(tri.V0);
                 var v1 = vs(tri.V1);
                 var v2 = vs(tri.V2);
 
-                // Convert NDC to screen
                 int x0 = (int)((v0.ClipPosition.X * 0.5f + 0.5f) * _frameBuffer.Width);
                 int y0 = (int)((1f - (v0.ClipPosition.Y * 0.5f + 0.5f)) * _frameBuffer.Height);
 
@@ -30,12 +28,10 @@ namespace GraphicsLibrary
                 int x2 = (int)((v2.ClipPosition.X * 0.5f + 0.5f) * _frameBuffer.Width);
                 int y2 = (int)((1f - (v2.ClipPosition.Y * 0.5f + 0.5f)) * _frameBuffer.Height);
 
-                // Precompute 1/z (or w) for perspective correct
                 float iw0 = 1f / v0.ClipPosition.Z;
                 float iw1 = 1f / v1.ClipPosition.Z;
                 float iw2 = 1f / v2.ClipPosition.Z;
 
-                // Predivide attributes
                 Vector3 world0 = v0.WorldPosition * iw0;
                 Vector3 world1 = v1.WorldPosition * iw1;
                 Vector3 world2 = v2.WorldPosition * iw2;
