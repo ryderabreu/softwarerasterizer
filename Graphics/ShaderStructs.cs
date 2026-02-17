@@ -1,14 +1,7 @@
 namespace GraphicsLibrary
 {
-    public delegate VertexShaderOutput VertexShader(VertexShaderInput input);
+    public delegate VertexShaderOutput VertexShader(Vertex input);
     public delegate Color FragmentShader(FragmentShaderInput input);
-
-    public struct VertexShaderInput
-    {
-        public Vector3 Position;
-        public Vector3 Normal;
-        public Color Color;
-    }
 
     public struct VertexShaderOutput
     {
