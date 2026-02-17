@@ -20,6 +20,14 @@ namespace GraphicsLibrary
             return new Quaternion(axis.X * s, axis.Y * s, axis.Z * s, (float)Math.Cos(half));
         }
 
+        public static Vector3 RotateVector(Vector3 v, Quaternion q)
+        {
+            Quaternion p = new Quaternion(v.X, v.Y, v.Z, 0);
+            Quaternion qConj = new Quaternion(-q.X, -q.Y, -q.Z, q.W);
+            Quaternion rotated = q * p * qConj;
+            return new Vector3(rotated.X, rotated.Y, rotated.Z);
+        }
+
         public static Quaternion operator *(Quaternion a, Quaternion b)
         {
             return new Quaternion(

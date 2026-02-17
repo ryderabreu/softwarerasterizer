@@ -67,12 +67,12 @@ namespace GraphicsLibrary
             float pitchRad = pitchDegrees * (float)Math.PI / 180f;
 
             Quaternion qYaw = Quaternion.FromAxisAngle(Up, yawRad);
-            offset = RotateVectorByQuaternion(offset, qYaw);
+            offset = Quaternion.RotateVector(offset, qYaw);
 
             Vector3 right = Vector3.Cross(offset, Up).Normalized();
             Quaternion qPitch = Quaternion.FromAxisAngle(right, pitchRad);
 
-            offset = RotateVectorByQuaternion(offset, qPitch);
+            offset = Quaternion.RotateVector(offset, qPitch);
             Position = Target + offset;
 
             Vector3 forward = (Target - Position).Normalized();
@@ -80,19 +80,34 @@ namespace GraphicsLibrary
             Up = Vector3.Cross(forward, rightAxis).Normalized();
         }
 
-        // Helper function
-        private Vector3 RotateVectorByQuaternion(Vector3 v, Quaternion q)
+        public void Rotate(float yawDegrees, float pitchDegrees)
         {
-            Quaternion p = new Quaternion(v.X, v.Y, v.Z, 0);
-            Quaternion qConj = new Quaternion(-q.X, -q.Y, -q.Z, q.W); // inverse
-            Quaternion rotated = q * p * qConj;
-            return new Vector3(rotated.X, rotated.Y, rotated.Z);
+            float yawRad = yawDegrees * (float)Math.PI / 180f;
+            float pitchRad = pitchDegrees * (float)Math.PI / 180f;
+
+            Vector3 forward = (Target - Position).Normalized();
+
+            Quaternion qYaw = Quaternion.FromAxisAngle(Up, yawRad);
+            forward = Quaternion.RotateVector(forward, qYaw);
+
+            Vector3 right = Vector3.Cross(forward, Up).Normalized();
+            Quaternion qPitch = Quaternion.FromAxisAngle(right, pitchRad);
+            forward = Quaternion.RotateVector(forward, qPitch);
+
+            Target = Position + forward;
+
+            Vector3 newRight = Vector3.Cross(forward, Up).Normalized();
+            Up = Vector3.Cross(newRight, forward).Normalized();
         }
 
         public void Translate(Vector3 delta)
         {
-            Position += delta;
-            Target += delta;
+            Vector3 forward = (Target - Position).Normalized();
+            Vector3 right = Vector3.Cross(forward, Up).Normalized();
+            Vector3 up = Up;
+
+            Position += right * delta.X + up * delta.Y + forward * delta.Z;
+            Target   += right * delta.X + up * delta.Y + forward * delta.Z;
         }
     }
 }

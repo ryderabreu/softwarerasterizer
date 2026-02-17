@@ -20,7 +20,7 @@ class Program
 
         Rasterizer rasterizer = new Rasterizer(window.FrameBuffer);
 
-        Mesh cube = PrimitiveGenerator.CreateSphere(1, 32, 32);
+        Mesh cube = PrimitiveGenerator.CreateCube();
 
         DirectionalLight light = new DirectionalLight(
             direction: new Vector3(-1, -1, 1),
@@ -78,10 +78,10 @@ class Program
         {
             rasterizer.Clear(Color.Black);
 
-            if (up) camera.Orbit(0, -3f);
-            if (down) camera.Orbit(0, 3f);
-            if (left) camera.Orbit(3f, 0);
-            if (right) camera.Orbit(-3f, 0);
+            if (up) camera.Rotate(0, -3f);
+            if (down) camera.Rotate(0, 3f);
+            if (left) camera.Rotate(-3f, 0);
+            if (right) camera.Rotate(3f, 0);
             if (w) camera.Translate(new Vector3(0, 0, 0.5f));
             if (s) camera.Translate(new Vector3(0, 0, -0.5f));
 
