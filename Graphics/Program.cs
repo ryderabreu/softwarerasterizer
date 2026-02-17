@@ -21,7 +21,7 @@ class Program
         Mesh cube = PrimitiveGenerator.CreateCube(1f);
 
         DirectionalLight light = new DirectionalLight(
-            direction: new Vector3(-1, -1, -1),
+            direction: new Vector3(1, -1, 1),
             color: new Color(1f, 1f, 1f),
             intensity: 1f
         );
@@ -35,12 +35,14 @@ class Program
 
             Vector3 worldPos = model * input.Position;
             Vector3 transformedNormal = model * input.Normal;
-
-            Vector3 clipPos = camera.ViewProjectionMatrix() * worldPos;
+            Vector3 viewPos = camera.ViewMatrix() * worldPos;
+            Vector4 clipPos = camera.ProjectionMatrix() * new Vector4(viewPos.X, viewPos.Y, viewPos.Z, 1f);
+            Vector3 ndcPos = clipPos.ToVector3();
 
             return new VertexShaderOutput
             {
                 ClipPosition = clipPos,
+                NDCPosition = ndcPos,
                 WorldPosition = worldPos,
                 Normal = transformedNormal,
                 Color = input.Color
@@ -54,10 +56,28 @@ class Program
 
         window.OnRender = deltaTime =>
         {
-            rotationY += 0.5f * deltaTime;
+            window.KeyPreview = true;
 
-            window.FrameBuffer.Clear(Color.Black);
+            window.KeyDown += (s, e) =>
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                        rotationY -= 0.0005f;
+                        break;
+                    case Keys.Right:
+                        rotationY += 0.0005f;
+                        break;
+                    case Keys.Up:
+                        rotationX -= 0.0005f;
+                        break;
+                    case Keys.Down:
+                        rotationX += 0.0005f;
+                        break;
+                }
+            };
 
+            rasterizer.Clear(Color.Black);
             rasterizer.DrawMesh(cube, vs, fs);
         };
 
