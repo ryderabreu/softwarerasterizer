@@ -106,12 +106,10 @@ namespace GraphicsLibrary
 
         private float Edge(Vector3 a, Vector3 b, Vector3 c)
         {
-            return (c.X - a.X) * (b.Y - a.Y) -
-                   (c.Y - a.Y) * (b.X - a.X);
+            return (c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X);
         }
 
-        private Color LerpColor(Color c0, Color c1, Color c2,
-                                float w0, float w1, float w2)
+        private Color LerpColor(Color c0, Color c1, Color c2, float w0, float w1, float w2)
         {
             return new Color(
                 c0.R*w0 + c1.R*w1 + c2.R*w2,

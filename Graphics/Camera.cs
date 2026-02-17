@@ -20,6 +20,11 @@ namespace GraphicsLibrary
             AspectRatio = aspectRatio;
         }
 
+        public void UpdateAspectRatio(float newAspect)
+        {
+            AspectRatio = newAspect;
+        }
+
         public Matrix4x4 ViewMatrix()
         {
             Vector3 forward = (Target - Position).Normalized();

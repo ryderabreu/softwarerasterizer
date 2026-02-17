@@ -8,31 +8,32 @@ namespace GraphicsLibrary
 {
     public class RenderWindow : Form
     {
+        private readonly int _fbWidth;
+        private readonly int _fbHeight;
         private readonly FrameBuffer _frameBuffer;
         private readonly Bitmap _bitmap;
-        private readonly Timer _timer;
-
-        public Action<float> OnRender; // deltaTime callback
-        private DateTime _lastFrameTime;
-
-        // Raw pixel buffer for lockbits
         private readonly byte[] _pixelBuffer;
+        private readonly Timer _timer;
+        public Action<float> OnRender;
+        private DateTime _lastFrameTime;
+        public Camera CameraReference { get; set; }
 
-        public RenderWindow(int width, int height)
+        public RenderWindow(int fbWidth = 1920, int fbHeight = 1080)
         {
-            Width = width;
-            Height = height;
+            _fbWidth = fbWidth;
+            _fbHeight = fbHeight;
+
             Text = "Software Renderer";
-
-            _frameBuffer = new FrameBuffer(width, height);
-            _bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-
-            _pixelBuffer = new byte[width * height * 4]; // 4 bytes per pixel (ARGB)
-
+            MinimumSize = new Size(400, 300);
+            ClientSize = new Size(fbWidth / 2, fbHeight / 2);
             DoubleBuffered = true;
 
+            _frameBuffer = new FrameBuffer(_fbWidth, _fbHeight);
+            _bitmap = new Bitmap(_fbWidth, _fbHeight, PixelFormat.Format32bppArgb);
+            _pixelBuffer = new byte[_fbWidth * _fbHeight * 4];
+
             _timer = new Timer();
-            _timer.Interval = 16; // ~60 FPS
+            _timer.Interval = 16;
             _timer.Tick += RenderLoop;
             _timer.Start();
 
@@ -54,27 +55,20 @@ namespace GraphicsLibrary
 
         private void Present()
         {
-            int width = _frameBuffer.Width;
-            int height = _frameBuffer.Height;
-
-            // Copy FrameBuffer colors into raw pixel buffer
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _fbHeight; y++)
+            for (int x = 0; x < _fbWidth; x++)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    Color c = _frameBuffer.ColorBuffer[x, y];
-                    int index = (y * width + x) * 4;
+                Color c = _frameBuffer.ColorBuffer[x, y];
+                int index = (y * _fbWidth + x) * 4;
 
-                    _pixelBuffer[index + 0] = (byte)(Math.Clamp(c.B, 0f, 1f) * 255f); // Blue
-                    _pixelBuffer[index + 1] = (byte)(Math.Clamp(c.G, 0f, 1f) * 255f); // Green
-                    _pixelBuffer[index + 2] = (byte)(Math.Clamp(c.R, 0f, 1f) * 255f); // Red
-                    _pixelBuffer[index + 3] = (byte)(Math.Clamp(c.A, 0f, 1f) * 255f); // Alpha
-                }
+                _pixelBuffer[index + 0] = (byte)(Math.Clamp(c.B, 0f, 1f) * 255f);
+                _pixelBuffer[index + 1] = (byte)(Math.Clamp(c.G, 0f, 1f) * 255f);
+                _pixelBuffer[index + 2] = (byte)(Math.Clamp(c.R, 0f, 1f) * 255f);
+                _pixelBuffer[index + 3] = (byte)(Math.Clamp(c.A, 0f, 1f) * 255f);
             }
 
-            // Lock bitmap and copy raw pixels
             BitmapData bmpData = _bitmap.LockBits(
-                new Rectangle(0, 0, width, height),
+                new Rectangle(0, 0, _fbWidth, _fbHeight),
                 ImageLockMode.WriteOnly,
                 PixelFormat.Format32bppArgb);
 
@@ -84,7 +78,30 @@ namespace GraphicsLibrary
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawImage(_bitmap, 0, 0, Width, Height);
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            
+            float scaleX = (float)ClientSize.Width / _frameBuffer.Width;
+            float scaleY = (float)ClientSize.Height / _frameBuffer.Height;
+            
+            float scale = MathF.Min(scaleX, scaleY);
+
+            int drawWidth = (int)(_frameBuffer.Width * scale);
+            int drawHeight = (int)(_frameBuffer.Height * scale);
+
+            int offsetX = (ClientSize.Width - drawWidth) / 2;
+            int offsetY = (ClientSize.Height - drawHeight) / 2;
+
+            e.Graphics.Clear(System.Drawing.Color.Black);
+            e.Graphics.DrawImage(_bitmap, offsetX, offsetY, drawWidth, drawHeight);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (CameraReference != null)
+            {
+                CameraReference.UpdateAspectRatio((float)_frameBuffer.Width / _frameBuffer.Height);
+            }
         }
     }
 }
