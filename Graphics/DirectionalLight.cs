@@ -17,7 +17,7 @@ namespace GraphicsLibrary
 
         public Color getColor(Vector3 normal, Color baseColor, float ambient)
         {
-            float diff = MathF.Max(Vector3.Dot(normal.Normalized(), Direction.Normalized()), 0f);
+            float diff = MathF.Max(Vector3.Dot(normal.Normalized(), -Direction.Normalized()), 0f);
 
             float r = (ambient + diff * Intensity) * baseColor.R * Color.R;
             float g = (ambient + diff * Intensity) * baseColor.G * Color.G;
