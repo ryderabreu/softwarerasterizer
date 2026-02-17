@@ -30,6 +30,14 @@ namespace GraphicsLibrary
             }
         }
 
+        public void DrawScene(Scene scene, VertexShader vs, FragmentShader fs)
+        {
+            foreach (var mesh in scene.Meshes)
+            {
+                DrawMesh(mesh, vs, fs);
+            }
+        }
+        
         public void DrawMesh(Mesh mesh, VertexShader vs, FragmentShader fs)
         {
             foreach (var tri in mesh.Triangles)

@@ -1,24 +1,25 @@
 using System;
+using System.Numerics;
 
 namespace GraphicsLibrary
 {
     public static class PrimitiveGenerator
     {
-        public static Mesh CreateCube(float size = 1f)
+        public static Mesh CreateCube(Vector3 pos, float size = 1f)
         {
             Mesh mesh = new Mesh();
             float h = size / 2f;
 
             Vector3[] positions =
             {
-                new Vector3(-h,-h,-h),
-                new Vector3( h,-h,-h),
-                new Vector3( h, h,-h),
-                new Vector3(-h, h,-h),
-                new Vector3(-h,-h, h),
-                new Vector3( h,-h, h),
-                new Vector3( h, h, h),
-                new Vector3(-h, h, h)
+                new Vector3(-h,-h,-h) + pos,
+                new Vector3( h,-h,-h) + pos,
+                new Vector3( h, h,-h) + pos,
+                new Vector3(-h, h,-h) + pos,
+                new Vector3(-h,-h, h) + pos,
+                new Vector3( h,-h, h) + pos,
+                new Vector3( h, h, h) + pos,
+                new Vector3(-h, h, h) + pos
             };
 
             int[,] faces =
@@ -63,17 +64,17 @@ namespace GraphicsLibrary
             return mesh;
         }
 
-        public static Mesh CreatePlane(float size = 1f)
+        public static Mesh CreatePlane(Vector3 pos, float size = 1f)
         {
             Mesh mesh = new Mesh();
             float h = size / 2f;
 
             Vector3 normal = new Vector3(0,1,0);
 
-            Vertex v0 = new Vertex(new Vector3(-h,0,-h), normal, Color.White);
-            Vertex v1 = new Vertex(new Vector3( h,0,-h), normal, Color.White);
-            Vertex v2 = new Vertex(new Vector3( h,0, h), normal, Color.White);
-            Vertex v3 = new Vertex(new Vector3(-h,0, h), normal, Color.White);
+            Vertex v0 = new Vertex(new Vector3(-h,0,-h) + pos, normal, Color.White);
+            Vertex v1 = new Vertex(new Vector3( h,0,-h) + pos, normal, Color.White);
+            Vertex v2 = new Vertex(new Vector3( h,0, h) + pos, normal, Color.White);
+            Vertex v3 = new Vertex(new Vector3(-h,0, h) + pos, normal, Color.White);
 
             mesh.AddTriangle(new Triangle(v0,v1,v2));
             mesh.AddTriangle(new Triangle(v0,v2,v3));
@@ -81,7 +82,7 @@ namespace GraphicsLibrary
             return mesh;
         }
 
-        public static Mesh CreatePyramid(float size = 1f, float height = 1f)
+        public static Mesh CreatePyramid(Vector3 pos, float size = 1f, float height = 1f)
         {
             Mesh mesh = new Mesh();
             float h = size / 2f;
@@ -90,10 +91,10 @@ namespace GraphicsLibrary
 
             Vector3[] baseVerts =
             {
-                new Vector3(-h,0,-h),
-                new Vector3( h,0,-h),
-                new Vector3( h,0, h),
-                new Vector3(-h,0, h)
+                new Vector3(-h,0,-h) + pos,
+                new Vector3( h,0,-h) + pos,
+                new Vector3( h,0, h) + pos,
+                new Vector3(-h,0, h) + pos
             };
 
             Vector3 baseNormal = new Vector3(0,-1,0);
@@ -122,7 +123,7 @@ namespace GraphicsLibrary
             return mesh;
         }
 
-        public static Mesh CreateSphere(float radius = 1f, int segments = 16, int rings = 16)
+        public static Mesh CreateSphere(Vector3 pos, float radius = 1f, int segments = 16, int rings = 16)
         {
             Mesh mesh = new Mesh();
 
@@ -147,10 +148,10 @@ namespace GraphicsLibrary
                     Vector3 p2 = Spherical(radius, theta1, phi1);
                     Vector3 p3 = Spherical(radius, theta0, phi1);
 
-                    Vertex vtx0 = new Vertex(p0, p0.Normalized(), Color.White);
-                    Vertex vtx1 = new Vertex(p1, p1.Normalized(), Color.White);
-                    Vertex vtx2 = new Vertex(p2, p2.Normalized(), Color.White);
-                    Vertex vtx3 = new Vertex(p3, p3.Normalized(), Color.White);
+                    Vertex vtx0 = new Vertex(p0 + pos, p0.Normalized(), Color.White);
+                    Vertex vtx1 = new Vertex(p1 + pos, p1.Normalized(), Color.White);
+                    Vertex vtx2 = new Vertex(p2 + pos, p2.Normalized(), Color.White);
+                    Vertex vtx3 = new Vertex(p3 + pos, p3.Normalized(), Color.White);
 
                     mesh.AddTriangle(new Triangle(vtx0, vtx1, vtx2));
                     mesh.AddTriangle(new Triangle(vtx0, vtx2, vtx3));
