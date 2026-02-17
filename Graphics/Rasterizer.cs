@@ -49,7 +49,7 @@ namespace GraphicsLibrary
 
                 Vector3 cameraDir = (v0.ClipPosition - v0.CameraPosition).Normalized();
 
-                if (Vector3.Dot(v0.Normal, cameraDir) >= 0)
+                if (EnableBackfaceCulling && Vector3.Dot(v0.Normal, cameraDir) >= 0)
                 {
                     continue;
                 }

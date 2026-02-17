@@ -20,11 +20,17 @@ class Program
 
         Rasterizer rasterizer = new Rasterizer(window.FrameBuffer, true);
 
-        Mesh cube = PrimitiveGenerator.CreateSphere();
+        Mesh cube = PrimitiveGenerator.CreateSphere(1, 32, 32);
 
-        DirectionalLight light = new DirectionalLight(
-            direction: new Vector3(-1, -1, 1),
-            color: new Color(1f, 1f, 1f),
+        DirectionalLight light1 = new DirectionalLight(
+            direction: new Vector3(-1, -1, -1),
+            color: new Color(1f, 0f, 0f),
+            intensity: 1f
+        );
+
+        DirectionalLight light2 = new DirectionalLight(
+            direction: new Vector3(1, 1, 1),
+            color: new Color(0f, 0f, 1f),
             intensity: 1f
         );
 
@@ -76,17 +82,17 @@ class Program
 
         FragmentShader fs = input =>
         {
-            return light.getColor(input.Normal, input.Color, 0.1f);
+            return light1.getColor(input.Normal, input.Color, 0f) + light2.getColor(input.Normal, input.Color, 0f);
         };
 
         window.OnRender = deltaTime =>
         {
             rasterizer.Clear(Color.Black);
 
-            if (up) camera.Rotate(0, 3f);
-            if (down) camera.Rotate(0, -3f);
-            if (left) camera.Rotate(3f, 0);
-            if (right) camera.Rotate(-3f, 0);
+            if (up) camera.Orbit(0, 3f);
+            if (down) camera.Orbit(0, -3f);
+            if (left) camera.Orbit(3f, 0);
+            if (right) camera.Orbit(-3f, 0);
             if (w) camera.Translate(new Vector3(0, 0, 0.5f));
             if (s) camera.Translate(new Vector3(0, 0, -0.5f));
             if (a) camera.Translate(new Vector3(-0.5f, 0, 0));

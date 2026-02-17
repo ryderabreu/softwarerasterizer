@@ -33,5 +33,11 @@ namespace GraphicsLibrary
 
             return System.Drawing.Color.FromArgb(a, r, g, b);
         }
+
+        public static Color operator +(Color a, Color b)
+                    => new Color(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
+
+        public static Color operator -(Color a, Color b)
+                    => new Color(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
     }
 }
