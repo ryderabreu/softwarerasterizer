@@ -21,7 +21,7 @@ class Program
         Rasterizer rasterizer = new Rasterizer(window.FrameBuffer, true);
 
         Scene scene = new Scene();
-        Mesh sphere = PrimitiveGenerator.CreateSphere(new Vector3(0, 2, 0));
+        Mesh sphere = PrimitiveGenerator.CreateSphere(Vector3.Zero);
         scene.AddMesh(sphere);
 
         DirectionalLight light = new DirectionalLight(
