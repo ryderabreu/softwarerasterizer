@@ -13,7 +13,7 @@ class Program
 
         Camera camera = new Camera(
             position: new Vector3(0, 0, -5),
-            target: new Vector3(0, 0, 1),
+            target: new Vector3(0, 0, 0),
                 aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
         );
         window.CameraReference = camera;
@@ -78,12 +78,12 @@ class Program
         {
             rasterizer.Clear(Color.Black);
 
-            if (up) camera.Rotate(0, -1.5f);
-            if (down) camera.Rotate(0, 1.5f);
-            if (left) camera.Rotate(1.5f, 0);
-            if (right) camera.Rotate(-1.5f, 0);
-            if (w) camera.Translate(new Vector3(0, 0, 0.1f));
-            if (s) camera.Translate(new Vector3(0, 0, -0.1f));
+            if (up) camera.Orbit(0, -3f);
+            if (down) camera.Orbit(0, 3f);
+            if (left) camera.Orbit(3f, 0);
+            if (right) camera.Orbit(-3f, 0);
+            if (w) camera.Translate(new Vector3(0, 0, 0.5f));
+            if (s) camera.Translate(new Vector3(0, 0, -0.5f));
 
             rasterizer.DrawMesh(cube, vs, fs);
         };

@@ -59,17 +59,40 @@ namespace GraphicsLibrary
             return ProjectionMatrix() * ViewMatrix();
         }
 
-        public void Rotate(float yawDegrees, float pitchDegrees)
+        public void Orbit(float yawDegrees, float pitchDegrees)
         {
-            Matrix4x4 yawMatrix = Matrix4x4.RotationY(yawDegrees * (float)Math.PI / 180f);
-            Matrix4x4 pitchMatrix = Matrix4x4.RotationX(pitchDegrees * (float)Math.PI / 180f);
+            Vector3 offset = Position - Target;
 
-            Target = pitchMatrix * yawMatrix * Target;
+            float yawRad = yawDegrees * (float)Math.PI / 180f;
+            float pitchRad = pitchDegrees * (float)Math.PI / 180f;
+
+            Quaternion qYaw = Quaternion.FromAxisAngle(Up, yawRad);
+            offset = RotateVectorByQuaternion(offset, qYaw);
+
+            Vector3 right = Vector3.Cross(offset, Up).Normalized();
+            Quaternion qPitch = Quaternion.FromAxisAngle(right, pitchRad);
+
+            offset = RotateVectorByQuaternion(offset, qPitch);
+            Position = Target + offset;
+
+            Vector3 forward = (Target - Position).Normalized();
+            Vector3 rightAxis = Vector3.Cross(Up, forward).Normalized();
+            Up = Vector3.Cross(forward, rightAxis).Normalized();
+        }
+
+        // Helper function
+        private Vector3 RotateVectorByQuaternion(Vector3 v, Quaternion q)
+        {
+            Quaternion p = new Quaternion(v.X, v.Y, v.Z, 0);
+            Quaternion qConj = new Quaternion(-q.X, -q.Y, -q.Z, q.W); // inverse
+            Quaternion rotated = q * p * qConj;
+            return new Vector3(rotated.X, rotated.Y, rotated.Z);
         }
 
         public void Translate(Vector3 delta)
         {
-            Target = Matrix4x4.Translation(delta) * Target;
+            Position += delta;
+            Target += delta;
         }
     }
 }
