@@ -1,6 +1,8 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using GraphicsLibrary;
+using Microsoft.VisualBasic.Devices;
 
 class Program
 {
@@ -10,8 +12,8 @@ class Program
         RenderWindow window = new RenderWindow(1920, 1080);
 
         Camera camera = new Camera(
-            position: new Vector3(0, 2, -5),
-            target: new Vector3(0, 0, 0),
+            position: new Vector3(0, 0, -5),
+            target: new Vector3(0, 0, 1),
                 aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
         );
         window.CameraReference = camera;
@@ -26,22 +28,43 @@ class Program
             intensity: 1f
         );
 
-        float rotationX = 0f;
-        float rotationY = 0f;
+        bool up = false, down = false, left = false, right = false, w = false, s = false;
+
+        window.KeyDown += (s1, e) =>
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up: up = true; break;
+                case Keys.Down: down = true; break;
+                case Keys.Left: left = true; break;
+                case Keys.Right: right = true; break;
+                case Keys.W: w = true; break;
+                case Keys.S: s = true; break;
+            }
+        };
+
+        window.KeyUp += (s1, e) =>
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Up: up = false; break;
+                case Keys.Down: down = false; break;
+                case Keys.Left: left = false; break;
+                case Keys.Right: right = false; break;
+                case Keys.W: w = false; break;
+                case Keys.S: s = false; break;
+            }
+        };
 
         VertexShader vs = input =>
         {
-            Matrix4x4 model = Matrix4x4.RotationY(rotationY) * Matrix4x4.RotationX(rotationX);
-
-            Vector3 worldPos = model * input.Position;
-            Vector3 transformedNormal = model * input.Normal;
-            Vector3 clipPos = camera.ViewProjectionMatrix() * worldPos;
+            Vector3 clipPos = camera.ViewProjectionMatrix() * input.Position;
 
             return new VertexShaderOutput
             {
                 ClipPosition = clipPos,
-                WorldPosition = worldPos,
-                Normal = transformedNormal,
+                WorldPosition = input.Position,
+                Normal = input.Normal,
                 Color = input.Color
             };
         };
@@ -54,6 +77,14 @@ class Program
         window.OnRender = deltaTime =>
         {
             rasterizer.Clear(Color.Black);
+
+            if (up) camera.Rotate(0, -1.5f);
+            if (down) camera.Rotate(0, 1.5f);
+            if (left) camera.Rotate(1.5f, 0);
+            if (right) camera.Rotate(-1.5f, 0);
+            if (w) camera.Translate(new Vector3(0, 0, 0.1f));
+            if (s) camera.Translate(new Vector3(0, 0, -0.1f));
+
             rasterizer.DrawMesh(cube, vs, fs);
         };
 

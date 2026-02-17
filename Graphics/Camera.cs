@@ -58,5 +58,18 @@ namespace GraphicsLibrary
         {
             return ProjectionMatrix() * ViewMatrix();
         }
+
+        public void Rotate(float yawDegrees, float pitchDegrees)
+        {
+            Matrix4x4 yawMatrix = Matrix4x4.RotationY(yawDegrees * (float)Math.PI / 180f);
+            Matrix4x4 pitchMatrix = Matrix4x4.RotationX(pitchDegrees * (float)Math.PI / 180f);
+
+            Target = pitchMatrix * yawMatrix * Target;
+        }
+
+        public void Translate(Vector3 delta)
+        {
+            Target = Matrix4x4.Translation(delta) * Target;
+        }
     }
 }

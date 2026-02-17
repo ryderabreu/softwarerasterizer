@@ -28,7 +28,7 @@ namespace GraphicsLibrary
         {
             float length = Length;
             if (length == 0f)
-                throw new InvalidOperationException("Cannot normalize zero vector.");
+                return new Vector3(0, 0, 0);
 
             return this / length;
         }
