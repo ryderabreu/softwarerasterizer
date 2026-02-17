@@ -18,9 +18,9 @@ class Program
         );
         window.CameraReference = camera;
 
-        Rasterizer rasterizer = new Rasterizer(window.FrameBuffer);
+        Rasterizer rasterizer = new Rasterizer(window.FrameBuffer, true);
 
-        Mesh cube = PrimitiveGenerator.CreateCube();
+        Mesh cube = PrimitiveGenerator.CreateSphere();
 
         DirectionalLight light = new DirectionalLight(
             direction: new Vector3(-1, -1, 1),
@@ -28,7 +28,7 @@ class Program
             intensity: 1f
         );
 
-        bool up = false, down = false, left = false, right = false, w = false, s = false;
+        bool up = false, down = false, left = false, right = false, w = false, s = false, a = false, d = false;
 
         window.KeyDown += (s1, e) =>
         {
@@ -40,6 +40,8 @@ class Program
                 case Keys.Right: right = true; break;
                 case Keys.W: w = true; break;
                 case Keys.S: s = true; break;
+                case Keys.A: a = true; break;
+                case Keys.D: d = true; break;
             }
         };
 
@@ -53,6 +55,8 @@ class Program
                 case Keys.Right: right = false; break;
                 case Keys.W: w = false; break;
                 case Keys.S: s = false; break;
+                case Keys.A: a = false; break;
+                case Keys.D: d = false; break;
             }
         };
 
@@ -65,7 +69,8 @@ class Program
                 ClipPosition = clipPos,
                 WorldPosition = input.Position,
                 Normal = input.Normal,
-                Color = input.Color
+                Color = input.Color,
+                CameraPosition = camera.Position
             };
         };
 
@@ -78,12 +83,14 @@ class Program
         {
             rasterizer.Clear(Color.Black);
 
-            if (up) camera.Rotate(0, -3f);
-            if (down) camera.Rotate(0, 3f);
-            if (left) camera.Rotate(-3f, 0);
-            if (right) camera.Rotate(3f, 0);
+            if (up) camera.Rotate(0, 3f);
+            if (down) camera.Rotate(0, -3f);
+            if (left) camera.Rotate(3f, 0);
+            if (right) camera.Rotate(-3f, 0);
             if (w) camera.Translate(new Vector3(0, 0, 0.5f));
             if (s) camera.Translate(new Vector3(0, 0, -0.5f));
+            if (a) camera.Translate(new Vector3(-0.5f, 0, 0));
+            if (d) camera.Translate(new Vector3(0.5f, 0, 0));
 
             rasterizer.DrawMesh(cube, vs, fs);
         };

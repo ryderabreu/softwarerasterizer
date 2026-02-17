@@ -8,10 +8,14 @@ namespace GraphicsLibrary
 
         private float[,] _depthBuffer;
 
-        public Rasterizer(FrameBuffer frameBuffer)
+        public bool EnableBackfaceCulling { get; set; } = true;
+
+
+        public Rasterizer(FrameBuffer frameBuffer, bool BackfaceCulling = true)
         {
             _frameBuffer = frameBuffer;
             _depthBuffer = new float[_frameBuffer.Width, _frameBuffer.Height];
+            EnableBackfaceCulling = BackfaceCulling;
         }
 
         public void Clear(Color clearColor)
@@ -42,6 +46,13 @@ namespace GraphicsLibrary
 
                 int x2 = (int)((v2.ClipPosition.X * 0.5f + 0.5f) * _frameBuffer.Width);
                 int y2 = (int)((1f - (v2.ClipPosition.Y * 0.5f + 0.5f)) * _frameBuffer.Height);
+
+                Vector3 cameraDir = (v0.ClipPosition - v0.CameraPosition).Normalized();
+
+                if (Vector3.Dot(v0.Normal, cameraDir) >= 0)
+                {
+                    continue;
+                }
 
                 float iw0 = 1f / v0.ClipPosition.Z;
                 float iw1 = 1f / v1.ClipPosition.Z;
