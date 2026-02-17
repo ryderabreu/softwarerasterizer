@@ -60,16 +60,6 @@ namespace GraphicsLibrary
             return new Vector3(x, y, z);
         }
 
-        public static Vector4 operator *(Matrix4x4 mat, Vector4 vec)
-        {
-            float x = mat[0,0] * vec.X + mat[0,1] * vec.Y + mat[0,2] * vec.Z + mat[0,3];
-            float y = mat[1,0] * vec.X + mat[1,1] * vec.Y + mat[1,2] * vec.Z + mat[1,3];
-            float z = mat[2,0] * vec.X + mat[2,1] * vec.Y + mat[2,2] * vec.Z + mat[2,3];
-            float w = mat[3,0] * vec.X + mat[3,1] * vec.Y + mat[3,2] * vec.Z + mat[3,3];
-
-            return new Vector4(x, y, z, w);
-        }
-
         public static Matrix4x4 Translation(Vector3 t)
         {
             return new Matrix4x4(new float[,]

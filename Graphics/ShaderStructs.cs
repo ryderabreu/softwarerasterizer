@@ -5,8 +5,7 @@ namespace GraphicsLibrary
 
 public struct VertexShaderOutput
 {
-    public Vector4 ClipPosition;
-    public Vector3 NDCPosition;
+    public Vector3 ClipPosition;
     public Vector3 WorldPosition;
     public Vector3 Normal;
     public Color Color;
