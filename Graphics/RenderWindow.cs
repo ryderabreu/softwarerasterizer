@@ -1,5 +1,7 @@
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace GraphicsLibrary
@@ -10,9 +12,11 @@ namespace GraphicsLibrary
         private readonly Bitmap _bitmap;
         private readonly Timer _timer;
 
-        public Action<float> OnRender;
-
+        public Action<float> OnRender; // deltaTime callback
         private DateTime _lastFrameTime;
+
+        // Raw pixel buffer for lockbits
+        private readonly byte[] _pixelBuffer;
 
         public RenderWindow(int width, int height)
         {
@@ -21,12 +25,14 @@ namespace GraphicsLibrary
             Text = "Software Renderer";
 
             _frameBuffer = new FrameBuffer(width, height);
-            _bitmap = new Bitmap(width, height);
+            _bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+
+            _pixelBuffer = new byte[width * height * 4]; // 4 bytes per pixel (ARGB)
 
             DoubleBuffered = true;
 
             _timer = new Timer();
-            _timer.Interval = 16;
+            _timer.Interval = 16; // ~60 FPS
             _timer.Tick += RenderLoop;
             _timer.Start();
 
@@ -48,11 +54,32 @@ namespace GraphicsLibrary
 
         private void Present()
         {
-            for (int x = 0; x < _frameBuffer.Width; x++)
-            for (int y = 0; y < _frameBuffer.Height; y++)
+            int width = _frameBuffer.Width;
+            int height = _frameBuffer.Height;
+
+            // Copy FrameBuffer colors into raw pixel buffer
+            for (int y = 0; y < height; y++)
             {
-                _bitmap.SetPixel(x, y, _frameBuffer.ColorBuffer[x, y].ToDrawingColor());
+                for (int x = 0; x < width; x++)
+                {
+                    Color c = _frameBuffer.ColorBuffer[x, y];
+                    int index = (y * width + x) * 4;
+
+                    _pixelBuffer[index + 0] = (byte)(Math.Clamp(c.B, 0f, 1f) * 255f); // Blue
+                    _pixelBuffer[index + 1] = (byte)(Math.Clamp(c.G, 0f, 1f) * 255f); // Green
+                    _pixelBuffer[index + 2] = (byte)(Math.Clamp(c.R, 0f, 1f) * 255f); // Red
+                    _pixelBuffer[index + 3] = (byte)(Math.Clamp(c.A, 0f, 1f) * 255f); // Alpha
+                }
             }
+
+            // Lock bitmap and copy raw pixels
+            BitmapData bmpData = _bitmap.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppArgb);
+
+            Marshal.Copy(_pixelBuffer, 0, bmpData.Scan0, _pixelBuffer.Length);
+            _bitmap.UnlockBits(bmpData);
         }
 
         protected override void OnPaint(PaintEventArgs e)
