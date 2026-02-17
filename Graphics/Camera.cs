@@ -1,0 +1,57 @@
+using System;
+
+namespace GraphicsLibrary
+{
+    public class Camera
+    {
+        public Vector3 Position { get; set; }
+        public Vector3 Target { get; set; }
+        public Vector3 Up { get; set; } = Vector3.UnitY;
+
+        public float FieldOfView { get; set; } = MathF.PI / 3f;
+        public float AspectRatio { get; set; } = 1f;
+        public float NearPlane { get; set; } = 0.1f;
+        public float FarPlane { get; set; } = 100f;
+
+        public Camera(Vector3 position, Vector3 target, float aspectRatio)
+        {
+            Position = position;
+            Target = target;
+            AspectRatio = aspectRatio;
+        }
+
+        public Matrix4x4 ViewMatrix()
+        {
+            Vector3 forward = (Target - Position).Normalized();
+            Vector3 right = Vector3.Cross(forward, Up).Normalized();
+            Vector3 up = Vector3.Cross(right, forward);
+
+            return new Matrix4x4(new float[,]
+            {
+                { right.X,   right.Y,   right.Z,   -Vector3.Dot(right, Position) },
+                { up.X,      up.Y,      up.Z,      -Vector3.Dot(up, Position) },
+                { -forward.X,-forward.Y,-forward.Z, Vector3.Dot(forward, Position) },
+                { 0,         0,         0,         1 }
+            });
+        }
+
+        public Matrix4x4 ProjectionMatrix()
+        {
+            float f = 1f / MathF.Tan(FieldOfView / 2f);
+            float nf = 1f / (NearPlane - FarPlane);
+
+            return new Matrix4x4(new float[,]
+            {
+                { f / AspectRatio, 0, 0, 0 },
+                { 0, f, 0, 0 },
+                { 0, 0, (FarPlane + NearPlane) * nf, 2 * FarPlane * NearPlane * nf },
+                { 0, 0, -1, 0 }
+            });
+        }
+
+        public Matrix4x4 ViewProjectionMatrix()
+        {
+            return ProjectionMatrix() * ViewMatrix();
+        }
+    }
+}
