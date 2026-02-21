@@ -11,12 +11,14 @@ namespace GraphicsLibrary
 
         public bool EnableBackfaceCulling { get; set; } = true;
 
+        public bool TwoSided = true;
 
-        public Rasterizer(FrameBuffer frameBuffer, bool BackfaceCulling = true)
+        public Rasterizer(FrameBuffer frameBuffer, bool BackfaceCulling = true, bool TwoSideRendering = false)
         {
             _frameBuffer = frameBuffer;
             _depthBuffer = new float[_frameBuffer.Width, _frameBuffer.Height];
             EnableBackfaceCulling = BackfaceCulling;
+            TwoSided = TwoSideRendering;
         }
 
         public void Clear(Color clearColor)
@@ -87,8 +89,17 @@ namespace GraphicsLibrary
             float area = EdgeFunction(x0, y0, x1, y1, x2, y2);
             if (area == 0f) return;
 
-            if (EnableBackfaceCulling && area < 0f)
-                return;
+            bool frontFace = true;
+
+            if (EnableBackfaceCulling && !TwoSided)
+            {
+                if (area >= 0f) 
+                    return;
+            }
+            else if (TwoSided)
+            {
+                frontFace = area < 0f;
+            }
 
             int minX = Math.Max(0, Math.Min(x0, Math.Min(x1, x2)));
             int maxX = Math.Min(_frameBuffer.Width - 1, Math.Max(x0, Math.Max(x1, x2)));
@@ -146,7 +157,8 @@ namespace GraphicsLibrary
                     {
                         WorldPosition = worldPos,
                         Normal = normal,
-                        Color = new Color(colorVec.X, colorVec.Y, colorVec.Z, 1f)
+                        Color = new Color(colorVec.X, colorVec.Y, colorVec.Z, 1f),
+                        FrontFace = frontFace
                     };
 
                     _frameBuffer.ColorBuffer[x, y] = fs(fragInput);

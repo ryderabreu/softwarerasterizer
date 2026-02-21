@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Reflection;
 
 namespace GraphicsLibrary
@@ -45,6 +46,24 @@ namespace GraphicsLibrary
                 return color * shadowAmbient;
 
             return light.getColor(normal, color, lightAmbient);
+        }
+
+        public Color CalculateWithoutShadows(Vector3 WorldPos, Color color, Vector3 normal)
+        {
+            return light.getColor(normal, color, lightAmbient);
+        }
+
+        public VertexOut ShadowVertexShader(Vertex input)
+        {
+            VertexOut output = new VertexOut();
+            output.ClipPosition = lightMatrix * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f);
+            return output;
+        }
+
+        public void ShadowRasterize(Scene scene, Rasterizer rasterizer)
+        {
+            shadowMap.Clear();
+            rasterizer.RenderShadowMap(scene, ShadowVertexShader, shadowMap);
         }
     }
 }
