@@ -39,5 +39,8 @@ namespace GraphicsLibrary
 
         public static Color operator -(Color a, Color b)
                     => new Color(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
+
+        public static Color operator *(Color a, float scalar)
+            => new Color(a.R * scalar, a.G * scalar, a.B * scalar, a.A * scalar);
     }
 }

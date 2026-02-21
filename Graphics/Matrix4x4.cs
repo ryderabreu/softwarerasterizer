@@ -43,21 +43,41 @@ namespace GraphicsLibrary
             return new Matrix4x4(result);
         }
 
+        public static Vector4 operator *(Matrix4x4 mat, Vector4 vec)
+        {
+            float x =
+                mat[0,0] * vec.X +
+                mat[0,1] * vec.Y +
+                mat[0,2] * vec.Z +
+                mat[0,3] * vec.W;
+
+            float y =
+                mat[1,0] * vec.X +
+                mat[1,1] * vec.Y +
+                mat[1,2] * vec.Z +
+                mat[1,3] * vec.W;
+
+            float z =
+                mat[2,0] * vec.X +
+                mat[2,1] * vec.Y +
+                mat[2,2] * vec.Z +
+                mat[2,3] * vec.W;
+
+            float w =
+                mat[3,0] * vec.X +
+                mat[3,1] * vec.Y +
+                mat[3,2] * vec.Z +
+                mat[3,3] * vec.W;
+
+            return new Vector4(x, y, z, w);
+        }
+
         public static Vector3 operator *(Matrix4x4 mat, Vector3 vec)
         {
-            float x = mat[0,0] * vec.X + mat[0,1] * vec.Y + mat[0,2] * vec.Z + mat[0,3];
-            float y = mat[1,0] * vec.X + mat[1,1] * vec.Y + mat[1,2] * vec.Z + mat[1,3];
-            float z = mat[2,0] * vec.X + mat[2,1] * vec.Y + mat[2,2] * vec.Z + mat[2,3];
-            float w = mat[3,0] * vec.X + mat[3,1] * vec.Y + mat[3,2] * vec.Z + mat[3,3];
+            Vector4 v = new Vector4(vec.X, vec.Y, vec.Z, 1f);
+            Vector4 result = mat * v;
 
-            if (w != 0f && w != 1f)
-            {
-                x /= w;
-                y /= w;
-                z /= w;
-            }
-
-            return new Vector3(x, y, z);
+            return new Vector3(result.X, result.Y, result.Z);
         }
 
         public static Matrix4x4 Translation(Vector3 t)
@@ -142,6 +162,20 @@ namespace GraphicsLibrary
                 {t*x*y + s*z,   t*y*y + c,     t*y*z - s*x,   0},
                 {t*x*z - s*y,   t*y*z + s*x,   t*z*z + c,     0},
                 {0,              0,             0,            1}
+            });
+        }
+
+        public static Matrix4x4 Orthographic(
+            float left, float right,
+            float bottom, float top,
+            float near, float far)
+        {
+            return new Matrix4x4(new float[,]
+            {
+                { 2f/(right-left), 0, 0, -(right+left)/(right-left) },
+                { 0, 2f/(top-bottom), 0, -(top+bottom)/(top-bottom) },
+                { 0, 0, -2f/(far-near), -(far+near)/(far-near) },
+                { 0, 0, 0, 1 }
             });
         }
 

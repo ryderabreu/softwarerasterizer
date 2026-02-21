@@ -12,23 +12,30 @@ class Program
         RenderWindow window = new RenderWindow(1920, 1080);
 
         Camera camera = new Camera(
-            position: new Vector3(0, 0, -5),
-            target: new Vector3(0, 0, 0),
+            position: new Vector3(0, 1, -10),
+            target: new Vector3(0, 1, 0),
                 aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
         );
         window.CameraReference = camera;
 
-        Rasterizer rasterizer = new Rasterizer(window.FrameBuffer, true);
+        Rasterizer rasterizer = new Rasterizer(window.FrameBuffer, false);
 
         Scene scene = new Scene();
-        Mesh sphere = PrimitiveGenerator.CreateSphere(Vector3.Zero);
+        Mesh sphere = PrimitiveGenerator.CreateSphere(3 * Vector3.UnitY);
+        Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20);
         scene.AddMesh(sphere);
+        scene.AddMesh(ground);
 
         DirectionalLight light = new DirectionalLight(
-            direction: new Vector3(-1, -1, -1),
+            direction: new Vector3(0, -1, -1),
             color: new Color(1f, 1f, 1f),
             intensity: 1f
         );
+
+        ShadowMap shadowMap = new ShadowMap(1024, 1024);
+        Matrix4x4 lightMatrix = light.LightMatrix(5, 1.5f * Vector3.UnitY);
+        
+        LightCalculator lightCalc = new LightCalculator(light, shadowMap, lightMatrix);
 
         bool up = false, down = false, left = false, right = false, w = false, s = false, a = false, d = false;
 
@@ -62,11 +69,11 @@ class Program
             }
         };
 
-        VertexShader vs = input =>
+        VertexOut vs(Vertex input)
         {
-            Vector3 clipPos = camera.ViewProjectionMatrix() * input.Position;
+            Vector4 clipPos = camera.ViewProjectionMatrix() * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f);
 
-            return new VertexShaderOutput
+            return new VertexOut
             {
                 ClipPosition = clipPos,
                 WorldPosition = input.Position,
@@ -76,17 +83,31 @@ class Program
             };
         };
 
-        FragmentShader fs = input =>
+        Color fs(FragmentIn input)
         {
-            return light.getColor(input.Normal, input.Color, 0.1f);
+            return lightCalc.Calculate(input.WorldPosition, input.Color, input.Normal);
         };
+
+        VertexOut shadowVS(Vertex input)
+        {
+            VertexOut output = new VertexOut();
+
+            Vector4 lightClip = lightMatrix * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f);
+
+            output.ClipPosition = lightClip;
+
+            return output;
+        };
+
+        // FragmentShader fs = (input) =>
+        // {
+        //     return light.getColor(input.Normal, input.Color, 0.1f);
+        // };
 
         window.OnRender = deltaTime =>
         {
-            rasterizer.Clear(Color.Black);
-
-            if (up) camera.Rotate(0, 3f);
-            if (down) camera.Rotate(0, -3f);
+            if (up) camera.Translate(new Vector3(0, 0.5f, 0));
+            if (down) camera.Translate(new Vector3(0, -0.5f, 0));
             if (left) camera.Rotate(3f, 0);
             if (right) camera.Rotate(-3f, 0);
             if (w) camera.Translate(new Vector3(0, 0, 0.5f));
@@ -94,6 +115,10 @@ class Program
             if (a) camera.Translate(new Vector3(-0.5f, 0, 0));
             if (d) camera.Translate(new Vector3(0.5f, 0, 0));
 
+            shadowMap.Clear();
+            rasterizer.RenderShadowMap(scene, shadowVS, shadowMap);
+            
+            rasterizer.Clear(Color.Black);
             rasterizer.DrawScene(scene, vs, fs);
         };
 

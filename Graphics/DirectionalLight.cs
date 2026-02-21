@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace GraphicsLibrary
 {
@@ -24,6 +25,44 @@ namespace GraphicsLibrary
             float b = (ambient + diff * Intensity) * baseColor.B * Color.B;
 
             return new Color(r, g, b, 1f);
+        }
+
+        public Matrix4x4 LightMatrix(float size, Vector3 sceneCenter)
+        {
+            Vector3 lightDir = Direction.Normalized();
+            Vector3 position = sceneCenter - lightDir * 20;
+            Vector3 forward = -lightDir;
+
+            Vector3 right;
+            Vector3 up;
+
+            if (MathF.Abs(lightDir.X) < 0.0001f && MathF.Abs(lightDir.Z) < 0.0001f)
+            {
+                right = new Vector3(1, 0, 0);
+                up = new Vector3(0, 0, 1);
+            }
+            else
+            {
+                up = Vector3.UnitY;
+                right = Vector3.Cross(up, forward).Normalized();
+                up = Vector3.Cross(forward, right);
+            }
+
+            Matrix4x4 view = new Matrix4x4(new float[,]
+            {
+                { right.X,   right.Y,   right.Z,   -Vector3.Dot(right, position) },
+                { up.X,      up.Y,      up.Z,      -Vector3.Dot(up, position) },
+                { forward.X, forward.Y, forward.Z, -Vector3.Dot(forward, position) },
+                { 0, 0, 0, 1 }
+            });
+
+            Matrix4x4 proj = Matrix4x4.Orthographic(
+                -size, size,
+                -size, size,
+                0.1f, 50f
+            );
+
+            return proj * view;
         }
     }
 }
