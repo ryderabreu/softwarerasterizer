@@ -87,14 +87,8 @@ namespace GraphicsLibrary
             if (area == 0f) return;
 
             bool frontFace = true;
-            if (EnableBackfaceCulling && !TwoSided)
-            {
-                if (area >= 0f) return;
-            }
-            else if (TwoSided)
-            {
-                frontFace = area < 0f;
-            }
+            if (EnableBackfaceCulling && !TwoSided && area >= 0f) return;
+            if (TwoSided) frontFace = area < 0f;
 
             int minX = Math.Max(0, Math.Min(x0, Math.Min(x1, x2)));
             int maxX = Math.Min(_frameBuffer.Width - 1, Math.Max(x0, Math.Max(x1, x2)));
@@ -115,39 +109,44 @@ namespace GraphicsLibrary
 
                     if (w0 < 0 || w1 < 0 || w2 < 0) continue;
 
-                    float invW = w0 * invW0 + w1 * invW1 + w2 * invW2;
-                    float W = 1f / invW;
+                    float sum = w0 * invW0 + w1 * invW1 + w2 * invW2;
+                    float W = 1f / sum;
+                    w0 = w0 * invW0 * W;
+                    w1 = w1 * invW1 * W;
+                    w2 = w2 * invW2 * W;
 
                     Vector3 worldPos =
-                        (v0.WorldPosition * (w0 * invW0) +
-                        v1.WorldPosition * (w1 * invW1) +
-                        v2.WorldPosition * (w2 * invW2)) * W;
+                        v0.WorldPosition * w0 +
+                        v1.WorldPosition * w1 +
+                        v2.WorldPosition * w2;
 
                     Vector3 normal =
-                        (v0.Normal * (w0 * invW0) +
-                        v1.Normal * (w1 * invW1) +
-                        v2.Normal * (w2 * invW2)) * W;
-                    normal = normal.Normalized();
+                        (v0.Normal * w0 + v1.Normal * w1 + v2.Normal * w2).Normalized();
 
                     Vector3 colorVec =
-                        (new Vector3(v0.Color.R, v0.Color.G, v0.Color.B) * (w0 * invW0) +
-                        new Vector3(v1.Color.R, v1.Color.G, v1.Color.B) * (w1 * invW1) +
-                        new Vector3(v2.Color.R, v2.Color.G, v2.Color.B) * (w2 * invW2)) * W;
+                        new Vector3(
+                            v0.Color.R * w0 + v1.Color.R * w1 + v2.Color.R * w2,
+                            v0.Color.G * w0 + v1.Color.G * w1 + v2.Color.G * w2,
+                            v0.Color.B * w0 + v1.Color.B * w1 + v2.Color.B * w2
+                        );
 
                     Vector2 uv =
-                        (v0.UV * (w0 * invW0) +
-                        v1.UV * (w1 * invW1) +
-                        v2.UV * (w2 * invW2)) * W;
+                        v0.UV * w0 +
+                        v1.UV * w1 +
+                        v2.UV * w2;
 
                     float depth =
-                        (w0 * ndc0.Z * invW0 +
-                        w1 * ndc1.Z * invW1 +
-                        w2 * ndc2.Z * invW2) * W;
+                        v0.ClipPosition.Z * w0 +
+                        v1.ClipPosition.Z * w1 +
+                        v2.ClipPosition.Z * w2;
+
+                    // 6️⃣ Convert depth to 0..1 (assuming OpenGL-style NDC -1..1)
                     depth = depth * 0.5f + 0.5f;
 
                     if (depth >= _depthBuffer[x, y]) continue;
                     _depthBuffer[x, y] = depth;
 
+                    // 7️⃣ Build fragment input and shade
                     var fragInput = new FragmentIn
                     {
                         WorldPosition = worldPos,
