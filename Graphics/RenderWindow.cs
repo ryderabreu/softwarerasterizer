@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace GraphicsLibrary
 {
-    public class RenderWindow : Form
+    public class Window : Form
     {
         private readonly int _fbWidth;
         private readonly int _fbHeight;
@@ -18,7 +18,7 @@ namespace GraphicsLibrary
         private DateTime _lastFrameTime;
         public Camera CameraReference { get; set; }
 
-        public RenderWindow(int fbWidth = 1920, int fbHeight = 1080)
+        public Window(int fbWidth = 1920, int fbHeight = 1080)
         {
             _fbWidth = fbWidth;
             _fbHeight = fbHeight;

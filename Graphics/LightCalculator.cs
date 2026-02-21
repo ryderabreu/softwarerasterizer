@@ -12,14 +12,14 @@ namespace GraphicsLibrary
         public float shadowAmbient;
         public float bias;
 
-        public LightCalculator(DirectionalLight directionallight, ShadowMap shadowmap, Matrix4x4 lightmatrix, float lightambient = 0.1f, float shadowambient = 0.3f, float b = 0.01f)
+        public LightCalculator(DirectionalLight directionallight, ShadowMap shadowmap, Vector3 viewPoint, float perspectiveSize = 10, float lightambient = 0.1f, float shadowambient = 0.3f, float b = 0.01f)
         {
             light = directionallight;
             shadowMap = shadowmap;
-            lightMatrix = lightmatrix;
             lightAmbient = lightambient;
             shadowAmbient = shadowambient;
             bias = b;
+            lightMatrix = light.LightMatrix(perspectiveSize, viewPoint);
         }
 
         public Color Calculate(Vector3 WorldPos, Color color, Vector3 normal)

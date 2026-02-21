@@ -27,10 +27,9 @@ namespace GraphicsLibrary
             return new Color(r, g, b, 1f);
         }
 
-        public Matrix4x4 LightMatrix(float size, Vector3 sceneCenter)
+        public Matrix4x4 LightMatrix(float size, Vector3 viewPoint)
         {
             Vector3 lightDir = Direction.Normalized();
-            Vector3 position = sceneCenter - lightDir * 20;
             Vector3 forward = -lightDir;
 
             Vector3 right;
@@ -50,9 +49,9 @@ namespace GraphicsLibrary
 
             Matrix4x4 view = new Matrix4x4(new float[,]
             {
-                { right.X,   right.Y,   right.Z,   -Vector3.Dot(right, position) },
-                { up.X,      up.Y,      up.Z,      -Vector3.Dot(up, position) },
-                { forward.X, forward.Y, forward.Z, -Vector3.Dot(forward, position) },
+                { right.X,   right.Y,   right.Z,   -Vector3.Dot(right, viewPoint) },
+                { up.X,      up.Y,      up.Z,      -Vector3.Dot(up, viewPoint) },
+                { forward.X, forward.Y, forward.Z, -Vector3.Dot(forward, viewPoint) },
                 { 0, 0, 0, 1 }
             });
 
