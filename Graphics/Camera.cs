@@ -10,8 +10,8 @@ namespace GraphicsLibrary
 
         public float FieldOfView { get; set; } = MathF.PI / 3f;
         public float AspectRatio { get; set; } = 1f;
-        public float NearPlane { get; set; } = 1f;
-        public float FarPlane { get; set; } = 100f;
+        public float NearPlane { get; set; } = 0.1f;
+        public float FarPlane { get; set; } = 1000;
 
         public Camera(Vector3 position, Vector3 target, float aspectRatio)
         {

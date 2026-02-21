@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace GraphicsLibrary
 {
-    public class LightCalculator
+    public class LightingCalculator
     {
         public DirectionalLight light;
         public ShadowMap shadowMap;
@@ -12,14 +12,14 @@ namespace GraphicsLibrary
         public float shadowAmbient;
         public float bias;
 
-        public LightCalculator(DirectionalLight directionallight, ShadowMap shadowmap, Vector3 viewPoint, float perspectiveSize = 10, float lightambient = 0.1f, float shadowambient = 0.3f, float b = 0.01f)
+        public LightingCalculator(DirectionalLight directionallight, ShadowMap shadowmap, Vector3 viewpoint, float perspectivesize = 10, float lightambient = 0.1f, float shadowambient = 0.3f, float b = 0.01f)
         {
             light = directionallight;
             shadowMap = shadowmap;
             lightAmbient = lightambient;
             shadowAmbient = shadowambient;
             bias = b;
-            lightMatrix = light.LightMatrix(perspectiveSize, viewPoint);
+            lightMatrix = light.LightMatrix(perspectivesize, viewpoint);
         }
 
         public Color Calculate(Vector3 WorldPos, Color color, Vector3 normal)
@@ -53,17 +53,17 @@ namespace GraphicsLibrary
             return light.getColor(normal, color, lightAmbient);
         }
 
-        public VertexOut ShadowVertexShader(Vertex input)
+        public VertexOut ShadowVertexShader(VertexOut input)
         {
-            VertexOut output = new VertexOut();
-            output.ClipPosition = lightMatrix * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f);
-            return output;
+            return new VertexOut{
+                ClipPosition = lightMatrix * new Vector4(input.WorldPosition.X, input.WorldPosition.Y, input.WorldPosition.Z, 1f)
+            };
         }
 
-        public void ShadowRasterize(Scene scene, Rasterizer rasterizer)
+        public void ShadowRasterize<Shaders>(Scene scene) where Shaders : Shader
         {
             shadowMap.Clear();
-            rasterizer.RenderShadowMap(scene, ShadowVertexShader, shadowMap);
+            Rasterizer.RenderShadowMap<Shaders>(scene, (Vertex input) => ShadowVertexShader(Shaders.VertexShader(input)), shadowMap);
         }
     }
 }

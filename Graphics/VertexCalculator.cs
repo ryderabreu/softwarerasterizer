@@ -21,7 +21,7 @@ namespace GraphicsLibrary
             return new VertexOut
             {
                 ClipPosition = camera.ViewProjectionMatrix() * model * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f),
-                WorldPosition = input.Position,
+                WorldPosition = model * input.Position,
                 Normal = input.Normal,
                 Color = input.Color,
                 UV = input.UV

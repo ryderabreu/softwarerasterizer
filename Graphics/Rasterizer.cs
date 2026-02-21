@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Numerics;
 using MainProgram;
 
 namespace GraphicsLibrary
 {
-    public abstract class Shader {
-        public abstract Texture texture { get; set; }
-        public abstract Matrix4x4 model { get; set; }
+    public interface Shader {
+        public static abstract Texture texture { get; set; }
+        public static abstract Matrix4x4 model { get; set; }
 
-        public abstract VertexOut VertexShader(Vertex v);
-        public abstract Color FragmentShader(FragmentIn v);
+        public static abstract VertexOut VertexShader(Vertex v);
+        public static abstract Color FragmentShader(FragmentIn v);
     }
 
     public class Rasterizer
@@ -43,30 +44,30 @@ namespace GraphicsLibrary
             }
         }
 
-        public void DrawScene(Scene scene, Shader shaders)
+        public void DrawScene<Shaders>(Scene scene) where Shaders : Shader
         {
             foreach (var mesh in scene.Meshes)
             {
-                DrawMesh(mesh, shaders);
+                DrawMesh<Shaders>(mesh);
             }
         }
         
-        public void DrawMesh(Mesh mesh, Shader shaders)
+        public void DrawMesh<Shaders>(Mesh mesh) where Shaders : Shader
         {
-            shaders.texture = mesh.texture;
-            shaders.model = mesh.model;
+            Shaders.texture = mesh.texture;
+            Shaders.model = mesh.model;
 
             foreach (var tri in mesh.Triangles)
             {
-                var v0 = shaders.VertexShader(tri.V0);
-                var v1 = shaders.VertexShader(tri.V1);
-                var v2 = shaders.VertexShader(tri.V2);
+                var v0 = Shaders.VertexShader(tri.V0);
+                var v1 = Shaders.VertexShader(tri.V1);
+                var v2 = Shaders.VertexShader(tri.V2);
 
-                ClipAndRasterize(v0, v1, v2, shaders);
+                ClipAndRasterize<Shaders>(v0, v1, v2);
             }
         }
 
-        private void ClipAndRasterize(VertexOut v0, VertexOut v1, VertexOut v2, Shader shader)
+        private void ClipAndRasterize<Shaders>(VertexOut v0, VertexOut v1, VertexOut v2) where Shaders : Shader
         {
             List<VertexOut> poly = new List<VertexOut> { v0, v1, v2 };
 
@@ -78,11 +79,11 @@ namespace GraphicsLibrary
 
             for (int i = 1; i < poly.Count - 1; i++)
             {
-                RasterizeTriangle(poly[0], poly[i], poly[i + 1], shader);
+                RasterizeTriangle<Shaders>(poly[0], poly[i], poly[i + 1]);
             }
         }
 
-        private void RasterizeTriangle(VertexOut v0, VertexOut v1, VertexOut v2, Shader shader)
+        private void RasterizeTriangle<Shaders>(VertexOut v0, VertexOut v1, VertexOut v2) where Shaders : Shader
         {
             Vector3 ndc0 = PerspectiveDivide(v0.ClipPosition);
             Vector3 ndc1 = PerspectiveDivide(v1.ClipPosition);
@@ -172,7 +173,7 @@ namespace GraphicsLibrary
                         FrontFace = frontFace
                     };
 
-                    _frameBuffer.ColorBuffer[x, y] = shader.FragmentShader(fragInput);
+                    _frameBuffer.ColorBuffer[x, y] = Shaders.FragmentShader(fragInput);
                 }
             }
         }
@@ -205,7 +206,7 @@ namespace GraphicsLibrary
             return output;
         }
 
-        private float EdgeFunction(int x0, int y0, int x1, int y1, int x2, int y2)
+        private static float EdgeFunction(int x0, int y0, int x1, int y1, int x2, int y2)
         {
             return (x2 - x0) * (y1 - y0) - (x1 - x0) * (y2 - y0);
         }
@@ -288,10 +289,13 @@ namespace GraphicsLibrary
             };
         }
 
-        public void RenderShadowMap(Scene scene, VertexShader shadowVS, ShadowMap shadowMap)
+        public static void RenderShadowMap<Shaders>(Scene scene, VertexShader shadowVS, ShadowMap shadowMap) where Shaders : Shader
         {
             foreach (var mesh in scene.Meshes)
-            {
+            {  
+                Shaders.texture = mesh.texture;
+                Shaders.model = mesh.model;
+                
                 foreach (var tri in mesh.Triangles)
                 {
                     var v0 = shadowVS(tri.V0);
@@ -318,7 +322,7 @@ namespace GraphicsLibrary
             }
         }
 
-        private void RasterizeShadowTriangle(
+        private static void RasterizeShadowTriangle(
             int x0, int y0,
             int x1, int y1,
             int x2, int y2,
