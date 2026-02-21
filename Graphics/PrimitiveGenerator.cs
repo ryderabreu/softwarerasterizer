@@ -42,6 +42,11 @@ namespace GraphicsLibrary
                 new Vector3(0,-1,0)
             };
 
+            Vector2 uv0 = new Vector2(0,0);
+            Vector2 uv1 = new Vector2(1,0);
+            Vector2 uv2 = new Vector2(1,1);
+            Vector2 uv3 = new Vector2(0,1);
+
             for (int i = 0; i < 6; i++)
             {
                 int a = faces[i,0];
@@ -52,32 +57,14 @@ namespace GraphicsLibrary
                 Vector3 normal = normals[i];
                 Color color = Color.White;
 
-                Vertex v0 = new Vertex(positions[a], normal, color);
-                Vertex v1 = new Vertex(positions[b], normal, color);
-                Vertex v2 = new Vertex(positions[c], normal, color);
-                Vertex v3 = new Vertex(positions[d], normal, color);
+                Vertex v0 = new Vertex(positions[a], normal, color, uv0);
+                Vertex v1 = new Vertex(positions[b], normal, color, uv1);
+                Vertex v2 = new Vertex(positions[c], normal, color, uv2);
+                Vertex v3 = new Vertex(positions[d], normal, color, uv3);
 
                 mesh.AddTriangle(new Triangle(v0, v1, v2));
                 mesh.AddTriangle(new Triangle(v0, v2, v3));
             }
-
-            return mesh;
-        }
-
-        public static Mesh CreatePlane(Vector3 pos, float size = 1f)
-        {
-            Mesh mesh = new Mesh();
-            float h = size / 2f;
-
-            Vector3 normal = new Vector3(0,1,0);
-
-            Vertex v0 = new Vertex(new Vector3(-h,0,-h) + pos, normal, Color.White);
-            Vertex v1 = new Vertex(new Vector3( h,0,-h) + pos, normal, Color.White);
-            Vertex v2 = new Vertex(new Vector3( h,0, h) + pos, normal, Color.White);
-            Vertex v3 = new Vertex(new Vector3(-h,0, h) + pos, normal, Color.White);
-
-            mesh.AddTriangle(new Triangle(v0,v1,v2));
-            mesh.AddTriangle(new Triangle(v0,v2,v3));
 
             return mesh;
         }
@@ -87,7 +74,7 @@ namespace GraphicsLibrary
             Mesh mesh = new Mesh();
             float h = size / 2f;
 
-            Vector3 top = new Vector3(0, height, 0);
+            Vector3 top = new Vector3(0, height, 0) + pos;
 
             Vector3[] baseVerts =
             {
@@ -98,13 +85,18 @@ namespace GraphicsLibrary
             };
 
             Vector3 baseNormal = new Vector3(0,-1,0);
-            Vertex b0 = new Vertex(baseVerts[0], baseNormal, Color.White);
-            Vertex b1 = new Vertex(baseVerts[1], baseNormal, Color.White);
-            Vertex b2 = new Vertex(baseVerts[2], baseNormal, Color.White);
-            Vertex b3 = new Vertex(baseVerts[3], baseNormal, Color.White);
+
+            Vertex b0 = new Vertex(baseVerts[0], baseNormal, Color.White, new Vector2(0,0));
+            Vertex b1 = new Vertex(baseVerts[1], baseNormal, Color.White, new Vector2(1,0));
+            Vertex b2 = new Vertex(baseVerts[2], baseNormal, Color.White, new Vector2(1,1));
+            Vertex b3 = new Vertex(baseVerts[3], baseNormal, Color.White, new Vector2(0,1));
 
             mesh.AddTriangle(new Triangle(b0,b2,b1));
             mesh.AddTriangle(new Triangle(b0,b3,b2));
+
+            Vector2 uvBottomLeft = new Vector2(0,0);
+            Vector2 uvBottomRight = new Vector2(1,0);
+            Vector2 uvTop = new Vector2(0.5f,1);
 
             for (int i = 0; i < 4; i++)
             {
@@ -113,9 +105,9 @@ namespace GraphicsLibrary
 
                 Vector3 normal = Vector3.Cross(p1 - p0, top - p0).Normalized();
 
-                Vertex v0 = new Vertex(p0, normal, Color.White);
-                Vertex v1 = new Vertex(p1, normal, Color.White);
-                Vertex v2 = new Vertex(top, normal, Color.White);
+                Vertex v0 = new Vertex(p0, normal, Color.White, uvBottomLeft);
+                Vertex v1 = new Vertex(p1, normal, Color.White, uvBottomRight);
+                Vertex v2 = new Vertex(top, normal, Color.White, uvTop);
 
                 mesh.AddTriangle(new Triangle(v0,v1,v2));
             }
@@ -148,10 +140,54 @@ namespace GraphicsLibrary
                     Vector3 p2 = Spherical(radius, theta1, phi1);
                     Vector3 p3 = Spherical(radius, theta0, phi1);
 
-                    Vertex vtx0 = new Vertex(p0 + pos, p0.Normalized(), Color.White);
-                    Vertex vtx1 = new Vertex(p1 + pos, p1.Normalized(), Color.White);
-                    Vertex vtx2 = new Vertex(p2 + pos, p2.Normalized(), Color.White);
-                    Vertex vtx3 = new Vertex(p3 + pos, p3.Normalized(), Color.White);
+                    Vector2 uv0 = new Vector2(u0, v0);
+                    Vector2 uv1 = new Vector2(u0, v1);
+                    Vector2 uv2 = new Vector2(u1, v1);
+                    Vector2 uv3 = new Vector2(u1, v0);
+
+                    Vertex vtx0 = new Vertex(p0 + pos, p0.Normalized(), Color.White, uv0);
+                    Vertex vtx1 = new Vertex(p1 + pos, p1.Normalized(), Color.White, uv1);
+                    Vertex vtx2 = new Vertex(p2 + pos, p2.Normalized(), Color.White, uv2);
+                    Vertex vtx3 = new Vertex(p3 + pos, p3.Normalized(), Color.White, uv3);
+
+                    mesh.AddTriangle(new Triangle(vtx0, vtx1, vtx2));
+                    mesh.AddTriangle(new Triangle(vtx0, vtx2, vtx3));
+                }
+            }
+
+            return mesh;
+        }
+
+        public static Mesh CreatePlane(Vector3 pos, float size = 1f, int subdivisions = 10)
+        {
+            Mesh mesh = new Mesh();
+
+            float h = size / 2f;
+            Vector3 normal = new Vector3(0, 1, 0);
+
+            int vertsPerSide = subdivisions + 1;
+            float step = size / subdivisions;
+
+            for (int z = 0; z < subdivisions; z++)
+            {
+                for (int x = 0; x < subdivisions; x++)
+                {
+                    float x0 = -h + x * step;
+                    float x1 = x0 + step;
+
+                    float z0 = -h + z * step;
+                    float z1 = z0 + step;
+
+                    float u0 = (float)x / subdivisions;
+                    float u1 = (float)(x + 1) / subdivisions;
+
+                    float v0 = (float)z / subdivisions;
+                    float v1 = (float)(z + 1) / subdivisions;
+
+                    Vertex vtx0 = new Vertex(new Vector3(x0, 0, z0) + pos, normal, Color.White, new Vector2(u0, v0));
+                    Vertex vtx1 = new Vertex(new Vector3(x1, 0, z0) + pos, normal, Color.White, new Vector2(u1, v0));
+                    Vertex vtx2 = new Vertex(new Vector3(x1, 0, z1) + pos, normal, Color.White, new Vector2(u1, v1));
+                    Vertex vtx3 = new Vertex(new Vector3(x0, 0, z1) + pos, normal, Color.White, new Vector2(u0, v1));
 
                     mesh.AddTriangle(new Triangle(vtx0, vtx1, vtx2));
                     mesh.AddTriangle(new Triangle(vtx0, vtx2, vtx3));

@@ -12,7 +12,7 @@ class Program
         RenderWindow window = new RenderWindow(1920, 1080);
 
         Camera camera = new Camera(
-            position: new Vector3(0, 1, -10),
+            position: new Vector3(0, 1, -15),
             target: new Vector3(0, 1, 0),
                 aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
         );
@@ -22,9 +22,10 @@ class Program
 
         Scene scene = new Scene();
         Mesh sphere = PrimitiveGenerator.CreateSphere(3 * Vector3.UnitY);
-        Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20);
+        Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20, 40);
         scene.AddMesh(sphere);
         scene.AddMesh(ground);
+        // scene.AddMesh(ObjLoader.Load(@""));
 
         DirectionalLight light = new DirectionalLight(
             direction: new Vector3(0, -1, -1),
@@ -37,6 +38,8 @@ class Program
             new ShadowMap(1024, 1024),
             light.LightMatrix(5, 1.5f * Vector3.UnitY)
         );
+
+        Texture texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\texture.jpg");
 
         bool up = false, down = false, left = false, right = false, w = false, s = false, a = false, d = false;
 
@@ -78,9 +81,9 @@ class Program
         Color fs(FragmentIn input)
         {
             if(input.FrontFace)
-                return lightCalc.Calculate(input.WorldPosition, input.Color, input.Normal);
+                return texture.Sample(input.UV) * lightCalc.Calculate(input.WorldPosition, input.Color, input.Normal);
             else
-                return lightCalc.CalculateWithoutShadows(input.WorldPosition, input.Color, input.Normal);
+                return texture.Sample(input.UV) * lightCalc.CalculateWithoutShadows(input.WorldPosition, input.Color, input.Normal);
         };
 
         window.OnRender = deltaTime =>
@@ -95,7 +98,6 @@ class Program
             if (d) camera.Translate(new Vector3(0.5f, 0, 0));
 
             lightCalc.ShadowRasterize(scene, rasterizer);
-            
             rasterizer.Clear(Color.Black);
             rasterizer.DrawScene(scene, vs, fs);
         };

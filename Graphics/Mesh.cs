@@ -38,7 +38,7 @@ namespace GraphicsLibrary
             Vector3 newNormal = (m * (v.Position + v.Normal)) - newPos;
             newNormal = newNormal.Normalized();
 
-            return new Vertex(newPos, newNormal, v.Color);
+            return new Vertex(newPos, newNormal, v.Color, v.UV);
         }
     }
 }

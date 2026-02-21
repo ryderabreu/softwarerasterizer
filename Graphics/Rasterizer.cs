@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace GraphicsLibrary
 {
@@ -60,9 +61,7 @@ namespace GraphicsLibrary
             for (int plane = 0; plane < 6; plane++)
             {
                 poly = ClipPolygonAgainstPlane(poly, plane);
-
-                if (poly.Count == 0)
-                    return;
+                if (poly.Count == 0) return;
             }
 
             for (int i = 1; i < poly.Count - 1; i++)
@@ -79,10 +78,8 @@ namespace GraphicsLibrary
 
             int x0 = ToScreenX(ndc0.X);
             int y0 = ToScreenY(ndc0.Y);
-
             int x1 = ToScreenX(ndc1.X);
             int y1 = ToScreenY(ndc1.Y);
-
             int x2 = ToScreenX(ndc2.X);
             int y2 = ToScreenY(ndc2.Y);
 
@@ -90,11 +87,9 @@ namespace GraphicsLibrary
             if (area == 0f) return;
 
             bool frontFace = true;
-
             if (EnableBackfaceCulling && !TwoSided)
             {
-                if (area >= 0f) 
-                    return;
+                if (area >= 0f) return;
             }
             else if (TwoSided)
             {
@@ -118,23 +113,10 @@ namespace GraphicsLibrary
                     float w1 = EdgeFunction(x2, y2, x0, y0, x, y) / area;
                     float w2 = 1f - w0 - w1;
 
-                    if (w0 < 0 || w1 < 0 || w2 < 0)
-                        continue;
+                    if (w0 < 0 || w1 < 0 || w2 < 0) continue;
 
                     float invW = w0 * invW0 + w1 * invW1 + w2 * invW2;
                     float W = 1f / invW;
-
-                    float depth =
-                        (w0 * ndc0.Z * invW0 +
-                        w1 * ndc1.Z * invW1 +
-                        w2 * ndc2.Z * invW2) * W;
-
-                    depth = depth * 0.5f + 0.5f;
-
-                    if (depth >= _depthBuffer[x, y])
-                        continue;
-
-                    _depthBuffer[x, y] = depth;
 
                     Vector3 worldPos =
                         (v0.WorldPosition * (w0 * invW0) +
@@ -145,7 +127,6 @@ namespace GraphicsLibrary
                         (v0.Normal * (w0 * invW0) +
                         v1.Normal * (w1 * invW1) +
                         v2.Normal * (w2 * invW2)) * W;
-
                     normal = normal.Normalized();
 
                     Vector3 colorVec =
@@ -153,11 +134,26 @@ namespace GraphicsLibrary
                         new Vector3(v1.Color.R, v1.Color.G, v1.Color.B) * (w1 * invW1) +
                         new Vector3(v2.Color.R, v2.Color.G, v2.Color.B) * (w2 * invW2)) * W;
 
+                    Vector2 uv =
+                        (v0.UV * (w0 * invW0) +
+                        v1.UV * (w1 * invW1) +
+                        v2.UV * (w2 * invW2)) * W;
+
+                    float depth =
+                        (w0 * ndc0.Z * invW0 +
+                        w1 * ndc1.Z * invW1 +
+                        w2 * ndc2.Z * invW2) * W;
+                    depth = depth * 0.5f + 0.5f;
+
+                    if (depth >= _depthBuffer[x, y]) continue;
+                    _depthBuffer[x, y] = depth;
+
                     var fragInput = new FragmentIn
                     {
                         WorldPosition = worldPos,
                         Normal = normal,
                         Color = new Color(colorVec.X, colorVec.Y, colorVec.Z, 1f),
+                        UV = uv,
                         FrontFace = frontFace
                     };
 
@@ -266,13 +262,14 @@ namespace GraphicsLibrary
             {
                 ClipPosition = a.ClipPosition + (b.ClipPosition - a.ClipPosition) * t,
                 WorldPosition = a.WorldPosition + (b.WorldPosition - a.WorldPosition) * t,
-                Normal = a.Normal + (b.Normal - a.Normal) * t,
+                Normal = (a.Normal + (b.Normal - a.Normal) * t).Normalized(),
                 Color = new Color(
                     a.Color.R + (b.Color.R - a.Color.R) * t,
                     a.Color.G + (b.Color.G - a.Color.G) * t,
                     a.Color.B + (b.Color.B - a.Color.B) * t,
                     1f
-                )
+                ),
+                UV = a.UV + (b.UV - a.UV) * t
             };
         }
 

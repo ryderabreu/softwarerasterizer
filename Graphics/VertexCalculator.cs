@@ -11,7 +11,8 @@ namespace GraphicsLibrary
                 ClipPosition = camera.ViewProjectionMatrix() * new Vector4(input.Position.X, input.Position.Y, input.Position.Z, 1f),
                 WorldPosition = input.Position,
                 Normal = input.Normal,
-                Color = input.Color
+                Color = input.Color,
+                UV = input.UV
             };
         }
     }

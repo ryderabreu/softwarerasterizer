@@ -9,6 +9,7 @@ namespace GraphicsLibrary
         public Vector3 WorldPosition;
         public Vector3 Normal;
         public Color Color;
+        public Vector2 UV;
     }
 
     public struct FragmentIn
@@ -17,5 +18,6 @@ namespace GraphicsLibrary
         public Vector3 Normal;
         public Color Color;
         public bool FrontFace;
+        public Vector2 UV;
     }
 }
