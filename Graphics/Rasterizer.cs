@@ -356,5 +356,12 @@ namespace GraphicsLibrary
                 }
             }
         }
+
+        public void RenderWithShadows<Shaders>(Scene scene, LightingCalculator lightCalc) where Shaders : Shader
+        {
+            lightCalc.ShadowRasterize<MyShaders>(scene);
+            Clear(Color.Black);
+            DrawScene<MyShaders>(scene);
+        }
     }
 }

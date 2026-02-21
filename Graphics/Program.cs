@@ -38,7 +38,10 @@ namespace MainProgram
 
             Scene scene = new Scene();
             Mesh cat = ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj");
-            Mesh ground = PrimitiveGenerator.CreatePlane(100, 50);
+            Mesh ground = PrimitiveGenerator.CreatePlane(
+                size: 100,
+                subdivisions: 50
+            );
 
             cat.texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
             cat.model = Matrix4x4.RotationY(MathF.PI);
@@ -62,11 +65,8 @@ namespace MainProgram
                 if (pressedKeys.Contains(Keys.S)) camera.Translate(new Vector3(0, 0, -3f));
                 if (pressedKeys.Contains(Keys.A)) camera.Translate(new Vector3(-3f, 0, 0));
                 if (pressedKeys.Contains(Keys.D)) camera.Translate(new Vector3(3f, 0, 0));
-                Console.WriteLine(deltaTime);
                 
-                lightCalc.ShadowRasterize<MyShaders>(scene);
-                rasterizer.Clear(Color.Black);
-                rasterizer.DrawScene<MyShaders>(scene);
+                rasterizer.RenderWithShadows<MyShaders>(scene, lightCalc);
             };
 
             Application.Run(window);
