@@ -87,8 +87,14 @@ namespace GraphicsLibrary
             if (area == 0f) return;
 
             bool frontFace = true;
-            if (EnableBackfaceCulling && !TwoSided && area >= 0f) return;
-            if (TwoSided) frontFace = area < 0f;
+            float signedArea = 
+                (v1.ClipPosition.X/v1.ClipPosition.W - v0.ClipPosition.X/v0.ClipPosition.W) *
+                (v2.ClipPosition.Y/v2.ClipPosition.W - v0.ClipPosition.Y/v0.ClipPosition.W) -
+                (v2.ClipPosition.X/v2.ClipPosition.W - v0.ClipPosition.X/v0.ClipPosition.W) *
+                (v1.ClipPosition.Y/v1.ClipPosition.W - v0.ClipPosition.Y/v0.ClipPosition.W);
+
+            if (EnableBackfaceCulling && !TwoSided && signedArea <= 0f) return;
+            if (TwoSided) frontFace = signedArea < 0f;
 
             int minX = Math.Max(0, Math.Min(x0, Math.Min(x1, x2)));
             int maxX = Math.Min(_frameBuffer.Width - 1, Math.Max(x0, Math.Max(x1, x2)));
