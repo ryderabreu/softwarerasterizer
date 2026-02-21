@@ -34,6 +34,7 @@ namespace MainProgram
             Scene scene = new Scene();
 
             Mesh cat = ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj");
+            cat.texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
             cat.model = Matrix4x4.RotationY(MathF.PI);
             scene.AddMesh(cat);
 
@@ -54,7 +55,7 @@ namespace MainProgram
                 
                 lightCalc.ShadowRasterize(scene, rasterizer);
                 rasterizer.Clear(Color.Black);
-                rasterizer.DrawScene(scene, Shaders.vs, Shaders.fs);
+                rasterizer.DrawScene(scene, new Shaders());
             };
 
             Application.Run(window);

@@ -6,6 +6,7 @@ namespace GraphicsLibrary
     {
         private readonly List<Triangle> _triangles = new List<Triangle>();
         public IReadOnlyList<Triangle> Triangles => _triangles;
+        public Texture texture;
         public Matrix4x4 model;
 
         public void AddTriangle(Triangle triangle)

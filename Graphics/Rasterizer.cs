@@ -5,6 +5,14 @@ using MainProgram;
 
 namespace GraphicsLibrary
 {
+    public abstract class Shader {
+        public abstract Texture texture { get; set; }
+        public abstract Matrix4x4 model { get; set; }
+
+        public abstract VertexOut VertexShader(Vertex v);
+        public abstract Color FragmentShader(FragmentIn v);
+    }
+
     public class Rasterizer
     {
         private FrameBuffer _frameBuffer;
@@ -35,29 +43,30 @@ namespace GraphicsLibrary
             }
         }
 
-        public void DrawScene(Scene scene, VertexShader vs, FragmentShader fs)
+        public void DrawScene(Scene scene, Shader shaders)
         {
             foreach (var mesh in scene.Meshes)
             {
-                DrawMesh(mesh, vs, fs);
+                DrawMesh(mesh, shaders);
             }
         }
         
-        public void DrawMesh(Mesh mesh, VertexShader vs, FragmentShader fs)
+        public void DrawMesh(Mesh mesh, Shader shaders)
         {
-            Shaders.model = mesh.model;
+            shaders.texture = mesh.texture;
+            shaders.model = mesh.model;
 
             foreach (var tri in mesh.Triangles)
             {
-                var v0 = vs(tri.V0);
-                var v1 = vs(tri.V1);
-                var v2 = vs(tri.V2);
+                var v0 = shaders.VertexShader(tri.V0);
+                var v1 = shaders.VertexShader(tri.V1);
+                var v2 = shaders.VertexShader(tri.V2);
 
-                ClipAndRasterize(v0, v1, v2, fs);
+                ClipAndRasterize(v0, v1, v2, shaders);
             }
         }
 
-        private void ClipAndRasterize(VertexOut v0, VertexOut v1, VertexOut v2, FragmentShader fs)
+        private void ClipAndRasterize(VertexOut v0, VertexOut v1, VertexOut v2, Shader shader)
         {
             List<VertexOut> poly = new List<VertexOut> { v0, v1, v2 };
 
@@ -69,11 +78,11 @@ namespace GraphicsLibrary
 
             for (int i = 1; i < poly.Count - 1; i++)
             {
-                RasterizeTriangle(poly[0], poly[i], poly[i + 1], fs);
+                RasterizeTriangle(poly[0], poly[i], poly[i + 1], shader);
             }
         }
 
-        private void RasterizeTriangle(VertexOut v0, VertexOut v1, VertexOut v2, FragmentShader fs)
+        private void RasterizeTriangle(VertexOut v0, VertexOut v1, VertexOut v2, Shader shader)
         {
             Vector3 ndc0 = PerspectiveDivide(v0.ClipPosition);
             Vector3 ndc1 = PerspectiveDivide(v1.ClipPosition);
@@ -163,7 +172,7 @@ namespace GraphicsLibrary
                         FrontFace = frontFace
                     };
 
-                    _frameBuffer.ColorBuffer[x, y] = fs(fragInput);
+                    _frameBuffer.ColorBuffer[x, y] = shader.FragmentShader(fragInput);
                 }
             }
         }
