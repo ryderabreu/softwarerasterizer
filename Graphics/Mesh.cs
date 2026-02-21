@@ -5,8 +5,8 @@ namespace GraphicsLibrary
     public class Mesh
     {
         private readonly List<Triangle> _triangles = new List<Triangle>();
-
         public IReadOnlyList<Triangle> Triangles => _triangles;
+        public Matrix4x4 model;
 
         public void AddTriangle(Triangle triangle)
         {

@@ -1,107 +1,63 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using GraphicsLibrary;
-using Microsoft.VisualBasic.Devices;
 
-class Program
+namespace MainProgram
 {
-    [STAThread]
-    static void Main()
+    class Program
     {
-        RenderWindow window = new RenderWindow(1920, 1080);
+        public static RenderWindow window = new RenderWindow(1920, 1080);
+        public static Rasterizer rasterizer = new Rasterizer(window.FrameBuffer);
+        public static Scene scene = new Scene();
+        public static Texture texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
+        public static Mesh mesh = ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj");
 
-        Camera camera = new Camera(
+        public static Camera camera = new Camera(
             position: new Vector3(0, 1, -15),
             target: new Vector3(0, 1, 0),
-                aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
+            aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
         );
-        window.CameraReference = camera;
-
-        Rasterizer rasterizer = new Rasterizer(window.FrameBuffer);
-
-        Scene scene = new Scene();
-        // Mesh sphere = PrimitiveGenerator.CreateSphere(3 * Vector3.UnitY, 1, 32, 32);
-        // Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20, 40);
-        // scene.AddMesh(sphere);
-        // scene.AddMesh(ground);
-        scene.AddMesh(ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj"));
-
-        DirectionalLight light = new DirectionalLight(
+        public static DirectionalLight light = new DirectionalLight(
             direction: new Vector3(0, -1, -1),
             color: new Color(1f, 1f, 1f),
             intensity: 1f
         );
-        
-        LightCalculator lightCalc = new LightCalculator(
+        public static LightCalculator lightCalc = new LightCalculator(
             light,
             new ShadowMap(1024, 1024),
             light.LightMatrix(5, 1.5f * Vector3.UnitY)
         );
 
-        Texture texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
-
-        bool up = false, down = false, left = false, right = false, w = false, s = false, a = false, d = false;
-
-        window.KeyDown += (s1, e) =>
+        [STAThread]
+        static void Main()
         {
-            switch (e.KeyCode)
+            window.CameraReference = camera;
+            mesh.model = Matrix4x4.RotationY(MathF.PI) * Matrix4x4.Translation(new Vector3(0, 0, -30));
+            scene.AddMesh(mesh);
+
+            HashSet<Keys> pressedKeys = new HashSet<Keys>();
+            window.KeyDown += (s1, e) => pressedKeys.Add(e.KeyCode);
+            window.KeyUp   += (s1, e) => pressedKeys.Remove(e.KeyCode);
+
+            window.OnRender = deltaTime =>
             {
-                case Keys.Up: up = true; break;
-                case Keys.Down: down = true; break;
-                case Keys.Left: left = true; break;
-                case Keys.Right: right = true; break;
-                case Keys.W: w = true; break;
-                case Keys.S: s = true; break;
-                case Keys.A: a = true; break;
-                case Keys.D: d = true; break;
-            }
-        };
+                if (pressedKeys.Contains(Keys.Up)) camera.Translate(new Vector3(0, 0.5f, 0));
+                if (pressedKeys.Contains(Keys.Down)) camera.Translate(new Vector3(0, -0.5f, 0));
+                if (pressedKeys.Contains(Keys.Left)) camera.Rotate(3f, 0);
+                if (pressedKeys.Contains(Keys.Right)) camera.Rotate(-3f, 0);
+                if (pressedKeys.Contains(Keys.W)) camera.Translate(new Vector3(0, 0, 0.5f));
+                if (pressedKeys.Contains(Keys.S)) camera.Translate(new Vector3(0, 0, -0.5f));
+                if (pressedKeys.Contains(Keys.A)) camera.Translate(new Vector3(-0.5f, 0, 0));
+                if (pressedKeys.Contains(Keys.D)) camera.Translate(new Vector3(0.5f, 0, 0));
+                
+                lightCalc.ShadowRasterize(scene, rasterizer);
+                rasterizer.Clear(Color.Black);
+                rasterizer.DrawScene(scene, Shaders.vs, Shaders.fs);
+            };
 
-        window.KeyUp += (s1, e) =>
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Up: up = false; break;
-                case Keys.Down: down = false; break;
-                case Keys.Left: left = false; break;
-                case Keys.Right: right = false; break;
-                case Keys.W: w = false; break;
-                case Keys.S: s = false; break;
-                case Keys.A: a = false; break;
-                case Keys.D: d = false; break;
-            }
-        };
-
-        VertexOut vs(Vertex input)
-        {
-            return VertexCalculator.Project(input, camera);
-        };
-
-        Color fs(FragmentIn input)
-        {
-            if(input.FrontFace)
-                return texture.Sample(input.UV) * lightCalc.Calculate(input.WorldPosition, input.Color, input.Normal);
-            else
-                return texture.Sample(input.UV) * lightCalc.CalculateWithoutShadows(input.WorldPosition, input.Color, input.Normal);
-        };
-
-        window.OnRender = deltaTime =>
-        {
-            if (up) camera.Translate(new Vector3(0, 0.5f, 0));
-            if (down) camera.Translate(new Vector3(0, -0.5f, 0));
-            if (left) camera.Rotate(3f, 0);
-            if (right) camera.Rotate(-3f, 0);
-            if (w) camera.Translate(new Vector3(0, 0, 0.5f));
-            if (s) camera.Translate(new Vector3(0, 0, -0.5f));
-            if (a) camera.Translate(new Vector3(-0.5f, 0, 0));
-            if (d) camera.Translate(new Vector3(0.5f, 0, 0));
-
-            lightCalc.ShadowRasterize(scene, rasterizer);
-            rasterizer.Clear(Color.Black);
-            rasterizer.DrawScene(scene, vs, fs);
-        };
-
-        Application.Run(window);
+            Application.Run(window);
+        }
     }
 }

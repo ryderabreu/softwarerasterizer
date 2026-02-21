@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using MainProgram;
 
 namespace GraphicsLibrary
 {
@@ -44,6 +45,8 @@ namespace GraphicsLibrary
         
         public void DrawMesh(Mesh mesh, VertexShader vs, FragmentShader fs)
         {
+            Shaders.model = mesh.model;
+
             foreach (var tri in mesh.Triangles)
             {
                 var v0 = vs(tri.V0);
