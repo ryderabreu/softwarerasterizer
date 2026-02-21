@@ -23,7 +23,7 @@ namespace GraphicsLibrary
             _fbWidth = fbWidth;
             _fbHeight = fbHeight;
 
-            Text = "Software Renderer";
+            Text = "Program";
             MinimumSize = new Size(400, 300);
             ClientSize = new Size(fbWidth / 2, fbHeight / 2);
             DoubleBuffered = true;

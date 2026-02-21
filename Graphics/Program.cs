@@ -21,11 +21,11 @@ class Program
         Rasterizer rasterizer = new Rasterizer(window.FrameBuffer);
 
         Scene scene = new Scene();
-        Mesh sphere = PrimitiveGenerator.CreateSphere(3 * Vector3.UnitY, 1, 32, 32);
-        Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20, 40);
-        scene.AddMesh(sphere);
-        scene.AddMesh(ground);
-        // scene.AddMesh(ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\12221_Cat_v1_l3.obj"));
+        // Mesh sphere = PrimitiveGenerator.CreateSphere(3 * Vector3.UnitY, 1, 32, 32);
+        // Mesh ground = PrimitiveGenerator.CreatePlane(Vector3.Zero, 20, 40);
+        // scene.AddMesh(sphere);
+        // scene.AddMesh(ground);
+        scene.AddMesh(ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj"));
 
         DirectionalLight light = new DirectionalLight(
             direction: new Vector3(0, -1, -1),
@@ -39,7 +39,7 @@ class Program
             light.LightMatrix(5, 1.5f * Vector3.UnitY)
         );
 
-        Texture texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\texture.jpg");
+        Texture texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
 
         bool up = false, down = false, left = false, right = false, w = false, s = false, a = false, d = false;
 

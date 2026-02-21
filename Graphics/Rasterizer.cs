@@ -146,13 +146,11 @@ namespace GraphicsLibrary
                         v1.ClipPosition.Z * w1 +
                         v2.ClipPosition.Z * w2;
 
-                    // 6️⃣ Convert depth to 0..1 (assuming OpenGL-style NDC -1..1)
                     depth = depth * 0.5f + 0.5f;
 
                     if (depth >= _depthBuffer[x, y]) continue;
                     _depthBuffer[x, y] = depth;
 
-                    // 7️⃣ Build fragment input and shade
                     var fragInput = new FragmentIn
                     {
                         WorldPosition = worldPos,
