@@ -5,7 +5,7 @@ using GraphicsLibrary;
 
 class Program
 {
-    public static Window window = new Window(1920, 1080);
+    public static Window window = new Window(1920, 1080, "Program");
 
     public static Camera camera = new Camera(
         position: new Vector3(0, 0, -100),
@@ -28,7 +28,7 @@ class Program
     static void Main()
     {
         window.CameraReference = camera;
-        Rasterizer rasterizer = new Rasterizer(
+        Renderer renderer = new Renderer(
             frameBuffer: window.FrameBuffer,
             BackfaceCulling: true,
             TwoSideRendering: false
@@ -64,7 +64,7 @@ class Program
             if (pressedKeys.Contains(Keys.A)) camera.Translate(new Vector3(-3f, 0, 0) * deltaTime);
             if (pressedKeys.Contains(Keys.D)) camera.Translate(new Vector3(3f, 0, 0) * deltaTime);
             
-            rasterizer.RenderWithShadows<DefaultShaders>(scene, lightCalc);
+            renderer.RenderWithShadows<DefaultShaders>(scene, lightCalc);
         };
 
         Application.Run(window);

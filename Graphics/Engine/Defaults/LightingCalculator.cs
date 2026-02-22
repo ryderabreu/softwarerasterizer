@@ -61,7 +61,7 @@ namespace GraphicsLibrary
         public void ShadowRasterize<Shaders>(Scene scene) where Shaders : Shader
         {
             shadowMap.Clear();
-            Rasterizer.RenderShadowMap<Shaders>(scene, (Vertex input) => ShadowVertexShader(Shaders.VertexShader(input)), shadowMap);
+            Renderer.RenderShadowMap<Shaders>(scene, (Vertex input) => ShadowVertexShader(Shaders.VertexShader(input)), shadowMap);
         }
     }
 }

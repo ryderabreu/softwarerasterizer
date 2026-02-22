@@ -18,12 +18,12 @@ namespace GraphicsLibrary
         private DateTime _lastFrameTime;
         public Camera CameraReference { get; set; }
 
-        public Window(int fbWidth = 1920, int fbHeight = 1080)
+        public Window(int fbWidth = 1920, int fbHeight = 1080, string title = "Program")
         {
             _fbWidth = fbWidth;
             _fbHeight = fbHeight;
 
-            Text = "Program";
+            Text = title;
             MinimumSize = new Size(400, 300);
             ClientSize = new Size(fbWidth / 2, fbHeight / 2);
             DoubleBuffered = true;

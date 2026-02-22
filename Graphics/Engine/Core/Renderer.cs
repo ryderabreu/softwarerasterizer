@@ -13,7 +13,7 @@ namespace GraphicsLibrary
         public static abstract Color FragmentShader(FragmentIn v);
     }
 
-    public class Rasterizer
+    public class Renderer
     {
         private FrameBuffer _frameBuffer;
 
@@ -23,7 +23,7 @@ namespace GraphicsLibrary
 
         public bool TwoSided = true;
 
-        public Rasterizer(FrameBuffer frameBuffer, bool BackfaceCulling = true, bool TwoSideRendering = false)
+        public Renderer(FrameBuffer frameBuffer, bool BackfaceCulling = true, bool TwoSideRendering = false)
         {
             _frameBuffer = frameBuffer;
             _depthBuffer = new float[_frameBuffer.Width, _frameBuffer.Height];
