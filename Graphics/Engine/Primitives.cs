@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace GraphicsLibrary
 {
-    public static class PrimitiveGenerator
+    public static class Primitives
     {
         public static Mesh CreateCube(float size = 1f)
         {

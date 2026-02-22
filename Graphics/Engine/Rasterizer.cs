@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Numerics;
-using MainProgram;
 
 namespace GraphicsLibrary
 {
@@ -359,9 +358,9 @@ namespace GraphicsLibrary
 
         public void RenderWithShadows<Shaders>(Scene scene, LightingCalculator lightCalc) where Shaders : Shader
         {
-            lightCalc.ShadowRasterize<MyShaders>(scene);
+            lightCalc.ShadowRasterize<Shaders>(scene);
             Clear(Color.Black);
-            DrawScene<MyShaders>(scene);
+            DrawScene<Shaders>(scene);
         }
     }
 }

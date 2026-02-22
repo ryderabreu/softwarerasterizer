@@ -22,34 +22,32 @@ namespace GraphicsLibrary
             lightMatrix = light.LightMatrix(perspectivesize, viewpoint);
         }
 
-        public Color Calculate(Vector3 WorldPos, Color color, Vector3 normal)
+        public Color Calculate(Vector3 worldposition, Color color, Vector3 normal, bool frontfacing = true, bool shadows = true, bool frontOnlyShadows = true)
         {
-            Vector3 worldPos = WorldPos;
-            Vector4 lightSpace = lightMatrix * new Vector4(worldPos.X, worldPos.Y, worldPos.Z, 1f);
-
-            int sx = (int)(((lightSpace.X * 0.5f) + 0.5f) * shadowMap.Width);
-            int sy = (int)((1f - ((lightSpace.Y * 0.5f) + 0.5f)) * shadowMap.Height);
-
-            bool inShadow = false;
-
-            if (sx >= 0 && sx < shadowMap.Width &&
-                sy >= 0 && sy < shadowMap.Height)
+            if(shadows && (!frontOnlyShadows || frontfacing))
             {
-                float shadowDepth = shadowMap.DepthBuffer[sx, sy];
-                float currentDepth = (lightSpace.Z * 0.5f) + 0.5f;
+                Vector3 worldPos = worldposition;
+                Vector4 lightSpace = lightMatrix * new Vector4(worldPos.X, worldPos.Y, worldPos.Z, 1f);
 
-                if (currentDepth > shadowDepth + bias)
-                    inShadow = true;
+                int sx = (int)(((lightSpace.X * 0.5f) + 0.5f) * shadowMap.Width);
+                int sy = (int)((1f - ((lightSpace.Y * 0.5f) + 0.5f)) * shadowMap.Height);
+
+                bool inShadow = false;
+
+                if (sx >= 0 && sx < shadowMap.Width &&
+                    sy >= 0 && sy < shadowMap.Height)
+                {
+                    float shadowDepth = shadowMap.DepthBuffer[sx, sy];
+                    float currentDepth = (lightSpace.Z * 0.5f) + 0.5f;
+
+                    if (currentDepth > shadowDepth + bias)
+                        inShadow = true;
+                }
+
+                if (inShadow)
+                    return color * shadowAmbient;
             }
 
-            if (inShadow)
-                return color * shadowAmbient;
-
-            return light.getColor(normal, color, lightAmbient);
-        }
-
-        public Color CalculateWithoutShadows(Vector3 WorldPos, Color color, Vector3 normal)
-        {
             return light.getColor(normal, color, lightAmbient);
         }
 

@@ -1,9 +1,9 @@
 using System.Configuration;
 using GraphicsLibrary;
 
-namespace MainProgram
+namespace GraphicsLibrary
 {
-    public class MyShaders : Shader
+    public class DefaultShaders : Shader
     {
         public static Texture texture { get; set; }
         public static Matrix4x4 model { get; set; }
@@ -15,10 +15,14 @@ namespace MainProgram
 
         public static Color FragmentShader(FragmentIn input)
         {
-            if(input.FrontFace)
-                return texture.Sample(input.UV) * Program.lightCalc.Calculate(input.WorldPosition, input.Color, input.Normal);
-            else
-                return texture.Sample(input.UV) * Program.lightCalc.CalculateWithoutShadows(input.WorldPosition, input.Color, input.Normal);
+            return texture.Sample(input.UV) * Program.lightCalc.Calculate(
+                worldposition: input.WorldPosition,
+                color: input.Color,
+                normal: input.Normal,
+                frontfacing: input.FrontFace,
+                shadows: true,
+                frontOnlyShadows: true
+            );
         }
     }
 }
