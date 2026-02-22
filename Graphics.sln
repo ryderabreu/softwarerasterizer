@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics\Graphics.csproj", "{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "..\Engine\Engine\Engine.csproj", "{A25820F7-BE08-4516-AD4F-88DE06750EFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}.Release|x64.Build.0 = Release|Any CPU
 		{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}.Release|x86.ActiveCfg = Release|Any CPU
 		{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}.Release|x86.Build.0 = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|x64.Build.0 = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Debug|x86.Build.0 = Debug|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|x64.Build.0 = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|x86.ActiveCfg = Release|Any CPU
+		{A25820F7-BE08-4516-AD4F-88DE06750EFD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
