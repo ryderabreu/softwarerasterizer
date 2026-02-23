@@ -6,7 +6,7 @@ namespace GraphicsLibrary
         public readonly int Height;
 
         public readonly Color[,] ColorBuffer;
-        public readonly float[,] DepthBuffer;
+        public readonly float[] DepthBuffer;
 
         public FrameBuffer(int width, int height)
         {
@@ -14,7 +14,7 @@ namespace GraphicsLibrary
             Height = height;
 
             ColorBuffer = new Color[width, height];
-            DepthBuffer = new float[width, height];
+            DepthBuffer = new float[width * height];
 
             Clear(Color.Black);
         }
@@ -25,7 +25,7 @@ namespace GraphicsLibrary
             for (int y = 0; y < Height; y++)
             {
                 ColorBuffer[x,y] = clearColor;
-                DepthBuffer[x,y] = float.MaxValue;
+                DepthBuffer[x + y * Width] = float.MaxValue;
             }
         }
     }

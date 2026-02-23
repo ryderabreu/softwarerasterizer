@@ -32,7 +32,10 @@ namespace GraphicsLibrary
             int a = (int)(Math.Clamp(A, 0f, 1f) * 255f);
 
             return System.Drawing.Color.FromArgb(a, r, g, b);
+
         }
+
+        public Vector3 ToVector3() => new Vector3(R, G, B);
 
         public static Color operator +(Color a, Color b)
                     => new Color(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);

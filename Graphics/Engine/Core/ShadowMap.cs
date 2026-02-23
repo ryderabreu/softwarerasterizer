@@ -5,13 +5,13 @@ namespace GraphicsLibrary
         public int Width { get; }
         public int Height { get; }
 
-        public float[,] DepthBuffer;
+        public float[] DepthBuffer;
 
         public ShadowMap(int width, int height)
         {
             Width = width;
             Height = height;
-            DepthBuffer = new float[width, height];
+            DepthBuffer = new float[width * height];
             Clear();
         }
 
@@ -19,7 +19,7 @@ namespace GraphicsLibrary
         {
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
-                    DepthBuffer[x, y] = float.MaxValue;
+                    DepthBuffer[x + y * Width] = float.MaxValue;
         }
     }
 }

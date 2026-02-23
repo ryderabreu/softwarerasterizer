@@ -37,7 +37,7 @@ namespace GraphicsLibrary
                 if (sx >= 0 && sx < shadowMap.Width &&
                     sy >= 0 && sy < shadowMap.Height)
                 {
-                    float shadowDepth = shadowMap.DepthBuffer[sx, sy];
+                    float shadowDepth = shadowMap.DepthBuffer[sx + sy * shadowMap.Width];
                     float currentDepth = (lightSpace.Z * 0.5f) + 0.5f;
 
                     if (currentDepth > shadowDepth + bias)

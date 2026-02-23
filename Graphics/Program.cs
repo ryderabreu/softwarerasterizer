@@ -8,20 +8,20 @@ class Program
     public static Window window = new Window(1920, 1080, "Program");
 
     public static Camera camera = new Camera(
-        position: new Vector3(0, 0, -100),
+        position: new Vector3(0, 0, 10),
         target: new Vector3(0, 0, 0),
         aspectRatio: (float)window.FrameBuffer.Width / window.FrameBuffer.Height
     );
 
     public static LightingCalculator lightCalc = new LightingCalculator(
         directionallight: new DirectionalLight(
-            direction: new Vector3(0, -1, 1),
+            direction: new Vector3(0, -1, -1),
             color: new Color(1f, 1f, 1f),
             intensity: 1f
         ),
         shadowmap: new ShadowMap(1024, 1024),
-        viewpoint: new Vector3(0, 40, 0),
-        perspectivesize: 150
+        viewpoint: new Vector3(0, 2, 0),
+        perspectivesize: 10
     );
 
     [STAThread]
@@ -35,18 +35,22 @@ class Program
         );
 
         Scene scene = new Scene();
-        Mesh cat = ObjLoader.Load(@"C:\Users\ryder\source\repos\Graphics\Graphics\cat.obj");
-        Mesh ground = Primitives.CreatePlane(
-            size: 100,
-            subdivisions: 50
+        
+        Mesh sphere = Primitives.CreateSphere(
+            radius: 1,
+            segments: 16,
+            rings: 16
         );
+        sphere.model = Matrix4x4.Identity;
+        sphere.texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\texture.jpg");
+        scene.AddMesh(sphere);
 
-        cat.texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\cattexture.jpg");
-        cat.model = Matrix4x4.RotationY(MathF.PI);
-        scene.AddMesh(cat);
-
+        Mesh ground = Primitives.CreatePlane(
+            size: 20,
+            subdivisions: 1
+        );
+        ground.model = Matrix4x4.Translation(new Vector3(0, -2, 0));
         ground.texture = Texture.FromImage(@"C:\Users\ryder\source\repos\Graphics\Graphics\texture.jpg");
-        ground.model = Matrix4x4.Translation(new Vector3(0, -40, 0));
         scene.AddMesh(ground);
 
         HashSet<Keys> pressedKeys = new HashSet<Keys>();
@@ -55,8 +59,8 @@ class Program
 
         window.OnRender = deltaTime =>
         {
-            if (pressedKeys.Contains(Keys.Left)) camera.Rotate(5f * deltaTime, 0);
-            if (pressedKeys.Contains(Keys.Right)) camera.Rotate(-5f * deltaTime, 0);
+            if (pressedKeys.Contains(Keys.Left)) camera.Rotate(20f * deltaTime, 0);
+            if (pressedKeys.Contains(Keys.Right)) camera.Rotate(-20f * deltaTime, 0);
             if (pressedKeys.Contains(Keys.Up)) camera.Translate(new Vector3(0, 3f, 0) * deltaTime);
             if (pressedKeys.Contains(Keys.Down)) camera.Translate(new Vector3(0, -3f, 0) * deltaTime);
             if (pressedKeys.Contains(Keys.W)) camera.Translate(new Vector3(0, 0, 3f) * deltaTime);
