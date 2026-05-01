@@ -1,0 +1,1 @@
+g++ -std=c++20 -O3 -mavx2 -mssse3 -mbmi -mfma -fopenmp -mwindows main.cpp Engine/Core/Renderer.cpp Engine/Core/Window.cpp Engine/Objects/Texture.cpp Engine/Components/Primitives.cpp Engine/Components/ObjLoader.cpp -o Graphics_Native.exe -lgdi32 -luser32 -lkernel32 -lole32 -luuid -lwindowscodecs

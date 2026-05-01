@@ -1,0 +1,58 @@
+Date : 2026-04-30 12:49:16
+Directory : c:\Users\ryder\source\repos\Graphics
+Total : 25 files,  1761 codes, 17 comments, 351 blanks, all 2129 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C#       |         24 |      1,753 |         17 |        348 |      2,118 |
+| XML      |          1 |          8 |          0 |          3 |         11 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                   |         25 |      1,761 |         17 |        351 |      2,129 |
+| Graphics                                                                            |         25 |      1,761 |         17 |        351 |      2,129 |
+| Graphics (Files)                                                                    |          2 |         73 |          0 |         14 |         87 |
+| Graphics\Engine                                                                     |         23 |      1,688 |         17 |        337 |      2,042 |
+| Graphics\Engine\Components                                                          |          5 |        408 |          1 |         92 |        501 |
+| Graphics\Engine\Core                                                                |          5 |        634 |         12 |        129 |        775 |
+| Graphics\Engine\Defaults                                                            |          3 |        115 |          3 |         17 |        135 |
+| Graphics\Engine\Math                                                                |          5 |        354 |          0 |         70 |        424 |
+| Graphics\Engine\Objects                                                             |          5 |        177 |          1 |         29 |        207 |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                            | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Components\Camera.cs           | C#       |         96 |          0 |         22 |        118 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Components\DirectionalLight.cs | C#       |         46 |          1 |         11 |         58 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Components\ObjLoader.cs        | C#       |         78 |          0 |         13 |         91 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Components\Primitives.cs       | C#       |        164 |          0 |         41 |        205 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Components\Scene.cs            | C#       |         24 |          0 |          5 |         29 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Core\FrameBuffer.cs            | C#       |         17 |          0 |          5 |         22 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Core\Renderer.cs               | C#       |        447 |         12 |         90 |        549 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Core\ShaderStructs.cs          | C#       |         21 |          0 |          2 |         23 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Core\ShadowMap.cs              | C#       |         22 |          0 |          4 |         26 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Core\Window.cs                 | C#       |        127 |          0 |         28 |        155 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Defaults\DefaultShaders.cs     | C#       |         33 |          0 |          5 |         38 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Defaults\LightingCalculator.cs | C#       |         54 |          3 |         10 |         67 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Defaults\VertexCalculator.cs   | C#       |         28 |          0 |          2 |         30 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Math\Matrix4x4.cs              | C#       |        142 |          0 |         19 |        161 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Math\Quaternion.cs             | C#       |         40 |          0 |          7 |         47 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Math\Vector2.cs                | C#       |         43 |          0 |         13 |         56 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Math\Vector3.cs                | C#       |         52 |          0 |         14 |         66 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Math\Vector4.cs                | C#       |         77 |          0 |         17 |         94 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Objects\Color.cs               | C#       |         40 |          0 |         11 |         51 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Objects\Mesh.cs                | C#       |         38 |          0 |          7 |         45 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Objects\Texture.cs             | C#       |         58 |          1 |          8 |         67 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Objects\Triangle.cs            | C#       |         24 |          0 |          2 |         26 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Engine\Objects\Vertex.cs              | C#       |         17 |          0 |          1 |         18 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Graphics.csproj                       | XML      |          8 |          0 |          3 |         11 |
+| c:\Users\ryder\source\repos\Graphics\Graphics\Program.cs                            | C#       |         65 |          0 |         11 |         76 |
+| Total                                                                               |          |      1,761 |         17 |        351 |      2,129 |
++-------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

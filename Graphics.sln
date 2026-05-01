@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics\Graphics.csproj", "{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics_DotNet\Graphics.csproj", "{7A66AAD7-CA9C-4040-9BD6-677F9146B14F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "..\Engine\Engine\Engine.csproj", "{A25820F7-BE08-4516-AD4F-88DE06750EFD}"
 EndProject
